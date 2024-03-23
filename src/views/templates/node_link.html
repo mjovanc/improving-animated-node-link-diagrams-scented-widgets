@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Home - A Simple Example on Flask MVC with D3{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <h1 class="mb-4">Node-link Diagram</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <div class="card p-4">
+                <svg width="1000" height="1000" id="my_dataviz">
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
