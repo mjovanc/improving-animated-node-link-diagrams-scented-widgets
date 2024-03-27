@@ -36,7 +36,7 @@ function visualizeData(data) {
     // Print a message to the console to check if the code reaches this part
     console.log(data);
 
-    updateVisualization(data.nodes, data.links);
+    updateVisualization(data.nodes, data.links, data.times);
     closeNav();
     // D3.js code to visualize data
     // This function will receive data from the server and create a node-link diagram

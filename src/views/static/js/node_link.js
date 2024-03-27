@@ -3,7 +3,9 @@ const svg = d3.select("#my_dataviz"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
-function updateVisualization(nodes, links) {
+function updateVisualization(nodes, links, times) {
+
+   
 
     const simulation = d3.forceSimulation(nodes)
         .force("link", d3.forceLink(links).id(d => d.id).distance(100))
