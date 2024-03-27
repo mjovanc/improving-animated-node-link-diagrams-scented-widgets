@@ -16,6 +16,7 @@ class DataModel:
     def read_data_from_txt(filename):
         nodes = []
         links = []
+        times = []
 
         with open(filename, 'r') as file:
             lines = file.readlines()
@@ -29,5 +30,5 @@ class DataModel:
                 if {"id": target} not in nodes:
                     nodes.append({"id": target})
 
-        return {"nodes": nodes, "links": links}
+        return {"nodes": nodes, "links": links, "times": times}
 

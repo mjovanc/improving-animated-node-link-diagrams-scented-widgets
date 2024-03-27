@@ -4,6 +4,7 @@ const svg = d3.select("#my_dataviz"),
     height = +svg.attr("height");
 
 function updateVisualization(nodes, links) {
+
     const simulation = d3.forceSimulation(nodes)
         .force("link", d3.forceLink(links).id(d => d.id).distance(100))
         .force("charge", d3.forceManyBody().strength(-100))
@@ -76,4 +77,9 @@ function updateVisualization(nodes, links) {
         console.log("Clicked node:", d.id);
         // Add your custom logic for node click event here
     }
+
+   
+      
+      // Usage example:
+    
 }
