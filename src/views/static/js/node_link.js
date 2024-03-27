@@ -5,6 +5,14 @@ const svg = d3.select("#my_dataviz"),
 
 function updateVisualization(nodes, links, times) {
 
+    const scrubber = d3.select("body").append("input")
+    .attr("type", "range")
+    .attr("min", 0)
+    .attr("step", 1)
+    .on("input", function() {
+        const currentTimeIndex = +this.value; //+this.value
+    });
+
    
 
     const simulation = d3.forceSimulation(nodes)
