@@ -3,11 +3,14 @@ const svg = d3.select("#my_dataviz"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
+const maxValue = 3;
+
 function updateVisualization(nodes, links, times) {
 
     const scrubber = d3.select("#scrubber").append("input")
     .attr("type", "range")
     .attr("min", 0)
+    .attr("max", maxValue)
     .attr("step", 1)
     .on("input", function() {
         const currentTimeIndex = +this.value; //+this.value
