@@ -22,13 +22,14 @@ class DataModel:
             lines = file.readlines()
 
             for line in lines:
-                source, target = line.strip().split()
+                source, target, time = map(int, line.strip().split())
                 links.append({"source": source, "target": target})
+                times.append(time)
 
                 if {"id": source} not in nodes:
                     nodes.append({"id": source})
                 if {"id": target} not in nodes:
                     nodes.append({"id": target})
 
-        return {"nodes": nodes, "links": links, "times": times}
+            return {"nodes": nodes, "links": links, "times": times}
 

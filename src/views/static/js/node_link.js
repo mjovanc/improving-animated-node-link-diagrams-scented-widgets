@@ -7,10 +7,14 @@ const maxValue = 3;
 
 function updateVisualization(nodes, links, times) {
 
+    // check unique values in times
+    console.log("times = " + times)
+    console.log("times.length = " + times.length)
+
     const scrubber = d3.select("#scrubber").append("input")
     .attr("type", "range")
-    .attr("min", 0)
-    .attr("max", maxValue)
+    .attr("min", 1)
+    .attr("max", times.length)
     .attr("step", 1)
     .on("input", function() {
         const currentTimeIndex = +this.value; //+this.value
