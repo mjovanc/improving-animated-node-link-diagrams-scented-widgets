@@ -11,6 +11,7 @@ function updateVisualization(nodes, links, times) {
     .attr("step", 1)
     .on("input", function() {
         const currentTimeIndex = +this.value; //+this.value
+        console.log(currentTimeIndex)
     });
 
     const simulation = d3.forceSimulation(nodes)
