@@ -35,6 +35,10 @@ function visualizeData(data) {
 
     // Print a message to the console to check if the code reaches this part
     console.log(data);
+    console.log("data = " + data.times)
+    console.log(typeof data.times);
+
+    // const timesArray = data.times.split(',').map(Number);
 
     updateVisualization(data.nodes, data.links, data.times);
     closeNav();

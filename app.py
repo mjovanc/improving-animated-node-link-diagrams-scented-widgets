@@ -42,7 +42,7 @@ def get_node_link():
 
 
 def convert_to_json(text_data):
-    nodes = set()
+    nodes = []
     links = []
     times = set()  # Using set to store unique timestamps
 
@@ -51,15 +51,13 @@ def convert_to_json(text_data):
         parts = line.split()
         if len(parts) == 3:  # Ensure each line contains three parts: node_origin, node_destiny, timestamp
             node_origin, node_destiny, timestamp = parts
-            nodes.add(node_origin)
-            nodes.add(node_destiny)
-            links.append({'source': node_origin, 'target': node_destiny})
+            nodes.append({'id': node_origin, 'group': 1, 'time': int(timestamp)})
+            nodes.append({'id': node_destiny, 'group': 1, 'time': int(timestamp)})
+            links.append({'source': node_origin, 'target': node_destiny, 'time': int(timestamp)})
             times.add(int(timestamp))  # Convert timestamp to integer and add to times set
 
-    # Create node data
-    nodes_data = [{'id': node, 'group': i+1} for i, node in enumerate(nodes)]
+    return {'nodes': nodes, 'links': links, 'times': sorted(list(times))}
 
-    return {'nodes': nodes_data, 'links': links, 'times': list(times)}  # Convert times set to list
 
 
 
@@ -71,6 +69,7 @@ def upload_file():
         text_data = file.read().decode('utf-8')
         # Convert to JSON format
         json_data = convert_to_json(text_data)
+        print(json_data)
         return jsonify(json_data)
     else:
         return jsonify({'error': 'Uploaded file must be in DAT format.'})

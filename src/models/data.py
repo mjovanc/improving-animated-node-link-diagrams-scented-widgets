@@ -23,8 +23,7 @@ class DataModel:
 
             for line in lines:
                 source, target, time = map(int, line.strip().split())
-                links.append({"source": source, "target": target})
-                times.append(time)
+                links.append({"source": source, "target": target, "time": time})
 
                 if {"id": source} not in nodes:
                     nodes.append({"id": source})
