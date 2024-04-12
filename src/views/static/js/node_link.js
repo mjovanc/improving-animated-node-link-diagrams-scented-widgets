@@ -4,7 +4,21 @@ const svg = d3.select("#my_dataviz"),
     height = +svg.attr("height");
 
 function updateVisualization(nodes, links, times) {
+    const currentTimeText = d3.select("#current-time");
+    const autoplayCheckbox = d3.select("#autoplayChecked");
+
+    autoplayCheckbox.node().removeAttribute("disabled");
+
     let currentTimeIndex = 0;
+    let isAutoplayEnabled = true;
+
+    currentTimeText.text("Current timestamp: " + currentTimeIndex);
+    // Add event listener to the autoplay checkbox
+    autoplayCheckbox.on("change", function() {
+        isAutoplayEnabled = this.checked; // Update autoplay state based on checkbox value
+        console.log("Autoplay enabled: " + isAutoplayEnabled);
+    });
+
     console.log("times.length = " + times.length);
     console.log("times = " + times);
     console.log("Original nodes:", nodes);
@@ -16,6 +30,8 @@ function updateVisualization(nodes, links, times) {
         .attr("max", times.length - 1) // Adjusted to match the index range
         .attr("step", 1)
         .attr("value", 0) // initial value
+        .attr("class", "form-range")
+        .attr("id", "select-time")
         .on("input", function() {
             currentTimeIndex = +this.value;
             console.log("currentTimeIndex = " + currentTimeIndex);
@@ -38,6 +54,7 @@ function updateVisualization(nodes, links, times) {
 
         // Redraw nodes, links, and labels
         redraw(filteredNodes, filteredLinks);
+        currentTimeText.text("Current timestamp: " + currentTimeIndex);
     }
 
 

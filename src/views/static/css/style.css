@@ -47,3 +47,8 @@
     font-size: 36px;
     margin-left: 50px;
 }
+
+.form-check {
+    margin-left: 12px;
+    padding-bottom: 10px;
+}
