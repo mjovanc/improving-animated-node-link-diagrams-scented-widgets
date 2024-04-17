@@ -3,6 +3,8 @@ var margin = {top: 10, right: 10, bottom: 20, left: 10},
     bar_width = 1300, // - margin.left - margin.right
     bar_height = 200; // - margin.top - margin.bottom
 
+const maxBarWidth = 50; // Maximum width for each bar
+
 // append the svg object to the body of the page
 var bar_svg = d3.select("#bar_chart")
     .append("svg")
