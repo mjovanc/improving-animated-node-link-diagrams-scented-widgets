@@ -8,13 +8,18 @@ let autoplayInterval; // Global variable to store the autoplay interval
 function updateVisualization(nodes, links, times) {
     const currentTimeText = d3.select("#current-time");
     const autoplayCheckbox = d3.select("#autoplayChecked");
+    const timeoutInput = d3.select("#intervalTimeoutRange").attr("step", 100);
+    const intervalTimeoutValue = d3.select("#intervalTimeoutValue");
 
     autoplayCheckbox.node().removeAttribute("disabled");
+    timeoutInput.node().removeAttribute("disabled");
 
     let currentTimeIndex = 0;
     let isAutoplayEnabled = true;
 
-    currentTimeText.text("Current timestamp: " + currentTimeIndex);
+    // Set initial text values
+    currentTimeText.text("Current Timestamp: " + currentTimeIndex);
+
     // Add event listener to the autoplay checkbox
     autoplayCheckbox.on("change", function() {
         isAutoplayEnabled = this.checked; // Update autoplay state based on checkbox value
@@ -26,6 +31,10 @@ function updateVisualization(nodes, links, times) {
             console.log("Stopping animation...");
             stopAutoplay();
         }
+    });
+
+    timeoutInput.on("change", function () {
+        intervalTimeoutValue.text("Current Timeout: " + this.value);
     });
 
     console.log("times.length = " + times.length);
@@ -44,7 +53,7 @@ function updateVisualization(nodes, links, times) {
         .on("input", function() {
             currentTimeIndex = +this.value;
             console.log("currentTimeIndex = " + currentTimeIndex);
-            updateSimulation(...currentTimeIndex);
+            updateSimulation(currentTimeIndex);
         });
 
     const simulation = d3.forceSimulation(nodes)
@@ -58,11 +67,11 @@ function updateVisualization(nodes, links, times) {
         .alphaDecay(0.05) // Slow down alpha decay for smoother animation
         .on("tick", ticked);
 
-    function updateSimulation(currentTimeIndex) {
-        console.log("updateSimulation(" + currentTimeIndex + ")");
+    function updateSimulation(timeIndex) {
+        console.log("updateSimulation(" + timeIndex + ")");
         console.log("Updating simulation...");
-        const filteredNodes = nodes.filter(d => d.time === currentTimeIndex);
-        const filteredLinks = links.filter(d => d.time === currentTimeIndex);
+        const filteredNodes = nodes.filter(d => d.time === timeIndex);
+        const filteredLinks = links.filter(d => d.time === timeIndex);
 
         simulation.nodes(filteredNodes);
         simulation.force("link").links(filteredLinks);
@@ -70,7 +79,7 @@ function updateVisualization(nodes, links, times) {
 
         // Redraw nodes, links, and labels
         redraw(filteredNodes, filteredLinks);
-        currentTimeText.text("Current timestamp: " + currentTimeIndex);
+        currentTimeText.text("Current timestamp: " + timeIndex);
     }
 
 
@@ -183,12 +192,12 @@ function updateVisualization(nodes, links, times) {
             if (currentTime < maxTime) {
                 currentTime++;
                 scrubber.property("value", currentTime);
-                updateSimulation();
+                updateSimulation(currentTime);
             } else {
                 // If current time reaches the maximum time, stop autoplay
                 stopAutoplay();
             }
-        }, 1000); // Interval time in milliseconds (adjust as needed)
+        }, document.getElementById("intervalTimeoutRange").value); // Interval time in milliseconds (adjust as needed)
     }
 
     function stopAutoplay() {
