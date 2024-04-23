@@ -60,11 +60,16 @@ function updateVisualization(nodes, links, times) {
 
     function redraw(nodes, links) {
         // Redraw links
-        const link = svg.selectAll("line")
+        const link = svg.selectAll(".link")
             .data(links, d => d.source.id + "-" + d.target.id)
-            .join("line")
-            .attr("stroke", "#999")
-            .attr("stroke-width", "2");
+            .join(
+                enter => enter.insert("line", ".node") // insert lines before nodes
+                    .attr("class", "link") // add class for styling
+                    .attr("stroke", "#999")
+                    .attr("stroke-width", "2"),
+                update => update,
+                exit => exit.remove()
+            );
 
         // Redraw nodes
         const node = svg.selectAll(".node")
@@ -83,7 +88,7 @@ function updateVisualization(nodes, links, times) {
             .attr("class", "label") // Add class for styling
             .text(d => d.id)
             .attr("font-size", "16px")
-            .attr("dx", -10)
+            .attr("dx", -5)
             .attr("dy", 5);
 
         simulation.nodes(nodes);
