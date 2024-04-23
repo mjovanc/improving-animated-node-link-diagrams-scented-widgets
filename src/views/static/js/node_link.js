@@ -3,6 +3,8 @@ const svg = d3.select("#my_dataviz"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
+let autoplayInterval; // Global variable to store the autoplay interval
+
 function updateVisualization(nodes, links, times) {
     const currentTimeText = d3.select("#current-time");
     const autoplayCheckbox = d3.select("#autoplayChecked");
@@ -17,6 +19,13 @@ function updateVisualization(nodes, links, times) {
     autoplayCheckbox.on("change", function() {
         isAutoplayEnabled = this.checked; // Update autoplay state based on checkbox value
         console.log("Autoplay enabled: " + isAutoplayEnabled);
+        if (isAutoplayEnabled) {
+            console.log("Starting animation...");
+            startAutoplay();
+        } else {
+            console.log("Stopping animation...");
+            stopAutoplay();
+        }
     });
 
     console.log("times.length = " + times.length);
@@ -35,7 +44,7 @@ function updateVisualization(nodes, links, times) {
         .on("input", function() {
             currentTimeIndex = +this.value;
             console.log("currentTimeIndex = " + currentTimeIndex);
-            updateSimulation();
+            updateSimulation(...currentTimeIndex);
         });
 
     const simulation = d3.forceSimulation(nodes)
@@ -49,7 +58,9 @@ function updateVisualization(nodes, links, times) {
         .alphaDecay(0.05) // Slow down alpha decay for smoother animation
         .on("tick", ticked);
 
-    function updateSimulation() {
+    function updateSimulation(currentTimeIndex) {
+        console.log("updateSimulation(" + currentTimeIndex + ")");
+        console.log("Updating simulation...");
         const filteredNodes = nodes.filter(d => d.time === currentTimeIndex);
         const filteredLinks = links.filter(d => d.time === currentTimeIndex);
 
@@ -160,5 +171,27 @@ function updateVisualization(nodes, links, times) {
     function clicked(event, d) {
         console.log("Clicked node:", d.id);
         // Add your custom logic for node click event here
+    }
+
+    function startAutoplay() {
+        autoplayInterval = setInterval(() => {
+            const scrubber = d3.select("#select-time");
+            const maxTime = scrubber.attr("max");
+            let currentTime = +scrubber.property("value");
+
+            // If current time is less than the maximum time, increment the value and update the visualization
+            if (currentTime < maxTime) {
+                currentTime++;
+                scrubber.property("value", currentTime);
+                updateSimulation();
+            } else {
+                // If current time reaches the maximum time, stop autoplay
+                stopAutoplay();
+            }
+        }, 1000); // Interval time in milliseconds (adjust as needed)
+    }
+
+    function stopAutoplay() {
+        clearInterval(autoplayInterval);
     }
 }
