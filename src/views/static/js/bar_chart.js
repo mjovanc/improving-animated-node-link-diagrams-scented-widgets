@@ -42,9 +42,10 @@ d3.csv("https://gist.githubusercontent.com/mjovanc/1da7cac899ada0837caeded5c83af
   //   .call(d3.axisLeft(y));
 
   // color palette = one color per subgroup
+  //TODO: the colors should be changed depending on Edges/Communities chart
   const color = d3.scaleOrdinal()
     .domain(subgroups)
-    .range(['#e41a1c','#377eb8','#4daf4a'])
+    .range(['#c3c3c4','#4e4e4d','#151516'])
 
   //stack the data? --> stack per subgroup
   const stackedData = d3.stack()
