@@ -40,8 +40,13 @@ function updateVisualization(nodes, links, times) {
 
     const simulation = d3.forceSimulation(nodes)
         .force("link", d3.forceLink().id(d => d.id).distance(100))
-        .force("charge", d3.forceManyBody().strength(-100))
+        .force("charge", d3.forceManyBody().strength(-100)) // Decrease repulsion strength
         .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collide", d3.forceCollide().radius(40)) // Add a collide force to prevent nodes from overlapping
+        .force("x", d3.forceX(width / 2).strength(0.1)) // Add an x-axis force to center nodes horizontally
+        .force("y", d3.forceY(height / 2).strength(0.1)) // Add a y-axis force to center nodes vertically
+        .alpha(1)
+        .alphaDecay(0.05) // Slow down alpha decay for smoother animation
         .on("tick", ticked);
 
     function updateSimulation() {
@@ -74,22 +79,29 @@ function updateVisualization(nodes, links, times) {
         // Redraw nodes
         const node = svg.selectAll(".node")
             .data(nodes, d => d.id)
-            .join("circle")
-            .attr("class", "node") // Add class for styling
-            .attr("r", 20)
-            .attr("fill", "blue")
-            .call(drag(simulation))
-            .on("click", clicked);
+            .join(
+                enter => enter.append("circle") // append new nodes
+                    .attr("class", "node") // Add class for styling
+                    .attr("r", 20)
+                    .attr("fill", "blue")
+                    .call(drag(simulation))
+                    .on("click", clicked),
+                update => update, // update existing nodes
+                exit => exit.remove() // remove nodes that are not in the data
+            );
 
         // Redraw labels
         const label = svg.selectAll(".label")
             .data(nodes, d => d.id)
-            .join("text")
-            .attr("class", "label") // Add class for styling
-            .text(d => d.id)
-            .attr("font-size", "16px")
-            .attr("dx", -5)
-            .attr("dy", 5);
+            .join(
+                enter => enter.append("text") // append new labels
+                    .attr("class", "label") // Add class for styling
+                    .text(d => d.id)
+                    .attr("font-size", "16px")
+                    .attr("dx", -10)
+                    .attr("dy", 5),
+                update => update // update existing labels
+            );
 
         simulation.nodes(nodes);
         simulation.force("link").links(links);
