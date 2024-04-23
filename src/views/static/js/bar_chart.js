@@ -3,24 +3,27 @@ var margin = {top: 10, right: 10, bottom: 20, left: 10},
     bar_width = 1300, // - margin.left - margin.right
     bar_height = 200; // - margin.top - margin.bottom
 
-const maxBarWidth = 50; // Maximum width for each bar
-
-// append the svg object to the body of the page
-var bar_svg = d3.select("#bar_chart")
-    .append("svg")
-    .attr("width", bar_width + margin.left + margin.right)
-    .attr("height", bar_height + margin.top + margin.bottom)
-    .append("g")
-    //.attr("transform",
-    //    "translate(" + margin.left + "," + margin.top + ")");
+const totalBarWidth = bar_width; // Maximum width
 
 // Parse the Data
-d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_stacked.csv").then((data) => {
+d3.csv("https://gist.githubusercontent.com/mjovanc/1da7cac899ada0837caeded5c83afc59/raw/1cd67725cc0941be1470be840e0936fee81a98a0/stacked_data.csv").then((data) => {
     // List of subgroups = header of the csv files = soil condition here
   const subgroups = data.columns.slice(1)
 
   // List of groups = species here = value of the first column called group -> I show them on the X axis
   const groups = data.map(d => (d.group))
+
+  console.log(groups.length)
+
+  // Append the svg object to the body of the page
+  var bar_svg = d3.select("#bar_chart")
+      .append("svg")
+      .attr("width", totalBarWidth + margin.left + margin.right)
+      .attr("height", bar_height + margin.top + margin.bottom)
+      .append("g")
+      .attr("width", totalBarWidth) // Set the width of the <g> tag
+      //.attr("transform",
+      //    "translate(" + margin.left + "," + margin.top + ")");
 
   // Add X axis
   const x = d3.scaleBand()
@@ -33,7 +36,7 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
 
   // Add Y axis
   const y = d3.scaleLinear()
-    .domain([0, 60])
+    .domain([0, 50])
     .range([ 100, 0 ]);
   // bar_svg.append("g")
   //   .call(d3.axisLeft(y));
@@ -62,7 +65,7 @@ d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/da
         .attr("x", d => x(d.data.group))
         .attr("y", d => y(d[1]))
         .attr("height", d => y(d[0]) - y(d[1]))
-        .attr("width",x.bandwidth())
+        .attr("width", x.bandwidth())
         .attr("stroke", "black") // Border color
         .attr("stroke-width", 1); // Border width
 })
