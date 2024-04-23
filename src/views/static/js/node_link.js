@@ -76,6 +76,9 @@ function updateVisualization(nodes, links, times) {
                 exit => exit.remove()
             );
 
+        // Disable transitions for links
+        link.transition().duration(0);
+
         // Redraw nodes
         const node = svg.selectAll(".node")
             .data(nodes, d => d.id)
@@ -90,6 +93,9 @@ function updateVisualization(nodes, links, times) {
                 exit => exit.remove() // remove nodes that are not in the data
             );
 
+        // Disable transitions for nodes
+        node.transition().duration(0);
+
         // Redraw labels
         const label = svg.selectAll(".label")
             .data(nodes, d => d.id)
@@ -102,6 +108,9 @@ function updateVisualization(nodes, links, times) {
                     .attr("dy", 5),
                 update => update // update existing labels
             );
+
+        // Disable transitions for labels
+        label.transition().duration(0);
 
         simulation.nodes(nodes);
         simulation.force("link").links(links);
