@@ -55,8 +55,14 @@ function processEdgesData(nodes, links, times) {
   }
 }
 
-function countNodesBetweenTimes(nodes, start, end) {
-  return nodes.filter((node) => node.time >= start && node.time <= end).length;
+function countUniqueNodesBetweenTimes(nodes, start, end) {
+  const uniqueNodes = new Set();
+  nodes.forEach((node) => {
+    if (node.time >= start && node.time <= end) {
+      uniqueNodes.add(node.id);
+    }
+  });
+  return uniqueNodes.size;
 }
 
 function processNodesData(nodes, links, times) {
@@ -65,11 +71,11 @@ function processNodesData(nodes, links, times) {
 
   // Check if the number of timestamps is less than or equal to 20
   if (totalTimestamps <= 20) {
-    // If so, calculate node counts directly without intervals
+    // If so, calculate unique node counts directly without intervals
     const nodeCounts = {};
     for (let i = 0; i < totalTimestamps; i++) {
       const time = times[i];
-      nodeCounts[time] = countNodesBetweenTimes(nodes, time, time);
+      nodeCounts[time] = countUniqueNodesBetweenTimes(nodes, time, time);
     }
     // Convert nodeCounts object into an array of objects
     const sampleData = Object.entries(nodeCounts).map(([time, count]) => ({
@@ -88,7 +94,11 @@ function processNodesData(nodes, links, times) {
       if (!nodeCounts[intervalIndex]) {
         nodeCounts[intervalIndex] = 0;
       }
-      nodeCounts[intervalIndex] += countNodesBetweenTimes(nodes, time, time);
+      nodeCounts[intervalIndex] += countUniqueNodesBetweenTimes(
+        nodes,
+        time,
+        time
+      );
       count++;
       if (count >= intervalSize || i === times.length - 1) {
         intervalIndex++;
