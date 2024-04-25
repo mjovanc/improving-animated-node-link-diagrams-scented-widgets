@@ -1,21 +1,116 @@
 // set the dimensions and margins of the graph
 var margin = { top: 10, right: 10, bottom: 20, left: 10 },
   bar_width = 1300, // - margin.left - margin.right
-  bar_height = 200; // - margin.top - margin.bottom
+  bar_height = 250; // - margin.top - margin.bottom
 
 const totalBarWidth = bar_width; // Maximum width
+
+function countEdgesBetweenTimes(links, start, end) {
+  return links.filter((link) => link.time >= start && link.time < end).length;
+}
+
+function processEdgesData(nodes, links, times) {
+  const totalTimestamps = times.length;
+
+  // Check if the number of timestamps is less than or equal to 20
+  if (totalTimestamps <= 20) {
+    // If so, calculate edge counts directly without intervals
+    const edgeCounts = {};
+    for (let i = 0; i < totalTimestamps; i++) {
+      const time = times[i];
+      edgeCounts[time] = countEdgesBetweenTimes(links, time, time + 1);
+    }
+    // Convert edgeCounts object into an array of objects
+    const sampleData = Object.entries(edgeCounts).map(([time, count]) => ({
+      group: `Time ${time}`,
+      value: count,
+    }));
+    return sampleData;
+  } else {
+    // Otherwise, apply the interval logic
+    const maxBars = 20;
+    const intervalSize = Math.ceil(totalTimestamps / maxBars);
+    const edgeCounts = {};
+    for (let i = 0; i < totalTimestamps - 1; i++) {
+      const start = times[i];
+      const end = times[i + 1];
+      const intervalIndex = Math.floor(start / intervalSize);
+      if (!edgeCounts[intervalIndex]) {
+        edgeCounts[intervalIndex] = 0;
+      }
+      edgeCounts[intervalIndex] += countEdgesBetweenTimes(links, start, end);
+    }
+    const sampleData = Object.entries(edgeCounts).map(
+      ([intervalIndex, count]) => ({
+        group: `Interval ${
+          parseInt(intervalIndex) * intervalSize + 1
+        }-${Math.min(
+          (parseInt(intervalIndex) + 1) * intervalSize,
+          totalTimestamps
+        )}`,
+        value: count,
+      })
+    );
+    return sampleData;
+  }
+}
+
+function countNodesBetweenTimes(nodes, start, end) {
+  return nodes.filter((node) => node.time >= start && node.time <= end).length;
+}
+
+function processNodesData(nodes, links, times) {
+  const totalTimestamps = times.length;
+  const maxBars = 20;
+
+  // Check if the number of timestamps is less than or equal to 20
+  if (totalTimestamps <= 20) {
+    // If so, calculate node counts directly without intervals
+    const nodeCounts = {};
+    for (let i = 0; i < totalTimestamps; i++) {
+      const time = times[i];
+      nodeCounts[time] = countNodesBetweenTimes(nodes, time, time);
+    }
+    // Convert nodeCounts object into an array of objects
+    const sampleData = Object.entries(nodeCounts).map(([time, count]) => ({
+      group: `Time ${time}`,
+      value: count,
+    }));
+    return sampleData;
+  } else {
+    // Otherwise, apply the interval logic
+    const intervalSize = Math.ceil(totalTimestamps / maxBars);
+    const nodeCounts = {};
+    let intervalIndex = 0;
+    let count = 0;
+    for (let i = 0; i < times.length; i++) {
+      const time = times[i];
+      if (!nodeCounts[intervalIndex]) {
+        nodeCounts[intervalIndex] = 0;
+      }
+      nodeCounts[intervalIndex] += countNodesBetweenTimes(nodes, time, time);
+      count++;
+      if (count >= intervalSize || i === times.length - 1) {
+        intervalIndex++;
+        count = 0;
+      }
+    }
+    return Object.entries(nodeCounts).map(([intervalIndex, count]) => ({
+      group: `Interval ${parseInt(intervalIndex) * intervalSize + 1}-${Math.min(
+        (parseInt(intervalIndex) + 1) * intervalSize,
+        totalTimestamps
+      )}`,
+      value: count,
+    }));
+  }
+}
 
 function edgesVisualization(nodes, links, times) {
   // Remove any existing SVG elements
   d3.select("#bar_chart").selectAll("svg").remove();
 
-  const sampleData = [
-    { group: "Group 1", value: 10 },
-    { group: "Group 2", value: 20 },
-    { group: "Group 3", value: 30 },
-    { group: "Group 4", value: 40 },
-    { group: "Group 5", value: 50 },
-  ];
+  const sampleData = processEdgesData(nodes, links, times);
+  console.log(JSON.stringify(sampleData, null, 2));
 
   // Append the svg object to the body of the page
   var bar_svg = d3
@@ -36,7 +131,7 @@ function edgesVisualization(nodes, links, times) {
   const y = d3
     .scaleLinear()
     .domain([0, d3.max(sampleData, (d) => d.value)])
-    .range([100, 0]);
+    .range([bar_height, 0]);
 
   // Show the bars
   bar_svg
@@ -57,13 +152,8 @@ function nodesVisualization(nodes, links, times) {
   // Remove any existing SVG elements
   d3.select("#bar_chart").selectAll("svg").remove();
 
-  const sampleData = [
-    { group: "Group 1", value: 10 },
-    { group: "Group 2", value: 20 },
-    { group: "Group 3", value: 30 },
-    { group: "Group 4", value: 40 },
-    { group: "Group 5", value: 50 },
-  ];
+  const sampleData = processNodesData(nodes, links, times);
+  console.log(JSON.stringify(sampleData, null, 2));
 
   // Append the svg object to the body of the page
   var bar_svg = d3
@@ -84,7 +174,7 @@ function nodesVisualization(nodes, links, times) {
   const y = d3
     .scaleLinear()
     .domain([0, d3.max(sampleData, (d) => d.value)])
-    .range([100, 0]);
+    .range([bar_height, 0]);
 
   // Show the bars
   bar_svg
