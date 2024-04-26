@@ -28,7 +28,7 @@ function processEdgesData(nodes, links, times) {
     return sampleData;
   } else {
     // Otherwise, apply the interval logic
-    const maxBars = 20;
+    const maxBars = 100;
     const intervalSize = Math.ceil(totalTimestamps / maxBars);
     const edgeCounts = {};
     for (let i = 0; i < totalTimestamps - 1; i++) {
