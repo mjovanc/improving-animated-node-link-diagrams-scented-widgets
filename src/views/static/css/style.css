@@ -68,3 +68,7 @@
     max-width: 200px;
     padding-top: 13px;
 }
+
+#intervalTimeoutValue {
+    display: inline;
+}
