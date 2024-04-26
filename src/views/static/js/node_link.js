@@ -16,7 +16,6 @@ function updateVisualization(nodes, links, times) {
   timeoutInput.node().removeAttribute("disabled");
 
   let currentTimeIndex = 0;
-  let isAutoplayEnabled = true;
 
   // Set initial text values
   currentTimeText.text("Current Timestamp: " + currentTimeIndex);
@@ -124,7 +123,8 @@ function updateVisualization(nodes, links, times) {
             .append("circle") // append new nodes
             .attr("class", "node") // Add class for styling
             .attr("r", 20)
-            .attr("fill", "blue")
+            .attr("fill", "rgba(240, 240, 240, 0.90)")
+            .attr("stroke", "#DFDFDF")
             .call(drag(simulation))
             .on("click", clicked),
         (update) => update, // update existing nodes
