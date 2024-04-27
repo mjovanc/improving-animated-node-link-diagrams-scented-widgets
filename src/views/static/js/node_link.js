@@ -40,6 +40,10 @@ function updateVisualization(nodes, links, times) {
     intervalTimeoutValue.text("Current Timeout: " + this.value);
   });
 
+  const uniqueNodeIds = new Set(nodes.map((d) => d.id)); // Create a set of unique node IDs
+
+  nodes = nodes.filter((d) => uniqueNodeIds.has(d.id)); // Filter out duplicate nodes
+
   console.log("times.length = " + times.length);
   console.log("times = " + times);
   console.log("Original nodes:", nodes);
@@ -82,9 +86,23 @@ function updateVisualization(nodes, links, times) {
   function updateSimulation(timeIndex) {
     console.log("updateSimulation(" + timeIndex + ")");
     console.log("Updating simulation...");
-    const filteredNodes = nodes.filter((d) => d.time === timeIndex);
-    const filteredLinks = links.filter((d) => d.time === timeIndex);
 
+    // Filter nodes to remove duplicates
+    const filteredNodes = [];
+    const uniqueNodeIds = new Set(); // Set to store unique node IDs
+
+    // Iterate through nodes and add unique nodes to filteredNodes
+    nodes.forEach((node) => {
+      if (node.time === timeIndex && !uniqueNodeIds.has(node.id)) {
+        filteredNodes.push(node);
+        uniqueNodeIds.add(node.id); // Add the node ID to the set
+      }
+    });
+
+    // Filter links based on the time index
+    const filteredLinks = links.filter((link) => link.time === timeIndex);
+
+    // Update simulation with filtered nodes and links
     simulation.nodes(filteredNodes);
     simulation.force("link").links(filteredLinks);
     simulation.alpha(1).restart();
