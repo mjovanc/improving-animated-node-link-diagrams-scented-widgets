@@ -1,9 +1,7 @@
 // set the dimensions and margins of the graph
-var margin = { top: 10, right: 10, bottom: -10, left: 10 },
-  bar_width = 850, // - margin.left - margin.right
+var margin = { top: 10, right: 0, bottom: -10, left: 0 },
+  bar_width = 870, // - margin.left - margin.right
   bar_height = 250; // - margin.top - margin.bottom
-
-const totalBarWidth = bar_width; // Maximum width
 
 function countEdgesBetweenTimes(links, start, end) {
   return links.filter((link) => link.time >= start && link.time < end).length;
@@ -126,16 +124,15 @@ function edgesVisualization(nodes, links, times) {
   var bar_svg = d3
     .select("#bar_chart")
     .append("svg")
-    .attr("width", totalBarWidth + margin.left + margin.right)
-    .attr("height", bar_height + margin.top + margin.bottom)
-    .append("g")
-    .attr("width", totalBarWidth);
+    .attr("width", bar_width)
+    .attr("height", bar_height)
+    .append("g");
 
   // List of groups = species here = value of the first column called group -> I show them on the X axis
   const groups = sampleData.map((d) => d.group);
 
   // Add X axis
-  const x = d3.scaleBand().domain(groups).range([0, width]);
+  const x = d3.scaleBand().domain(groups).range([0, bar_width]);
 
   // Add Y axis
   const y = d3
@@ -153,8 +150,8 @@ function edgesVisualization(nodes, links, times) {
     .attr("y", (d) => y(d.value))
     .attr("height", (d) => bar_height - y(d.value))
     .attr("width", x.bandwidth())
-    .attr("fill", "#c3c3c4")
-    .attr("stroke", "black") // Border color
+    .attr("fill", "#336cf7")
+    .attr("stroke", "#eaecef") // Border color
     .attr("stroke-width", 1); // Border width
 }
 
@@ -165,20 +162,18 @@ function nodesVisualization(nodes, links, times) {
   const sampleData = processNodesData(nodes, links, times);
   console.log(JSON.stringify(sampleData, null, 2));
 
-  // Append the svg object to the body of the page
-  var bar_svg = d3
+  // Append the SVG object to the body of the page
+  var svg = d3
     .select("#bar_chart")
     .append("svg")
-    .attr("width", totalBarWidth + margin.left + margin.right)
-    .attr("height", bar_height + margin.top + margin.bottom)
-    .append("g")
-    .attr("width", totalBarWidth);
+    .attr("width", bar_width)
+    .attr("height", bar_height);
 
   // List of groups = species here = value of the first column called group -> I show them on the X axis
   const groups = sampleData.map((d) => d.group);
 
   // Add X axis
-  const x = d3.scaleBand().domain(groups).range([0, width]);
+  const x = d3.scaleBand().domain(groups).range([0, bar_width]);
 
   // Add Y axis
   const y = d3
@@ -186,19 +181,20 @@ function nodesVisualization(nodes, links, times) {
     .domain([0, d3.max(sampleData, (d) => d.value)])
     .range([bar_height, 0]);
 
-  // Show the bars
-  bar_svg
-    .selectAll("rect")
-    .data(sampleData)
-    .enter()
-    .append("rect")
-    .attr("x", (d) => x(d.group))
-    .attr("y", (d) => y(d.value))
-    .attr("height", (d) => bar_height - y(d.value))
-    .attr("width", x.bandwidth())
-    .attr("fill", "#c3c3c4")
-    .attr("stroke", "black") // Border color
-    .attr("stroke-width", 1); // Border width
+  // Initialize line generator
+  var line = d3
+    .line()
+    .x((d) => x(d.group) + x.bandwidth() / 2) // Adjust for centering the line
+    .y((d) => y(d.value));
+
+  // Draw the line
+  svg
+    .append("path")
+    .datum(sampleData)
+    .attr("fill", "none")
+    .attr("stroke", "#336cf7") // Line color
+    .attr("stroke-width", 2) // Line width
+    .attr("d", line);
 }
 
 function communitiesVisualization(nodes, links, times) {
@@ -221,10 +217,10 @@ function communitiesVisualization(nodes, links, times) {
     var bar_svg = d3
       .select("#bar_chart")
       .append("svg")
-      .attr("width", totalBarWidth + margin.left + margin.right)
-      .attr("height", bar_height + margin.top + margin.bottom)
+      .attr("width", bar_width)
+      .attr("height", bar_height)
       .append("g")
-      .attr("width", totalBarWidth); // Set the width of the <g> tag
+      .attr("width", bar_width); // Set the width of the <g> tag
     //.attr("transform",
     //    "translate(" + margin.left + "," + margin.top + ")");
 
@@ -236,7 +232,7 @@ function communitiesVisualization(nodes, links, times) {
     //   .call(d3.axisBottom(x).tickSizeOuter(0));
 
     // Add Y axis
-    const y = d3.scaleLinear().domain([0, 50]).range([100, 0]);
+    const y = d3.scaleLinear().domain([0, 50]).range([bar_height, 0]);
     // bar_svg.append("g")
     //   .call(d3.axisLeft(y));
 
@@ -245,7 +241,7 @@ function communitiesVisualization(nodes, links, times) {
     const color = d3
       .scaleOrdinal()
       .domain(subgroups)
-      .range(["#c3c3c4", "#4e4e4d", "#151516"]);
+      .range(["#336CF7", "#A5A6DC", "#EEEDFF"]);
 
     //stack the data? --> stack per subgroup
     const stackedData = d3.stack().keys(subgroups)(data);
@@ -266,7 +262,7 @@ function communitiesVisualization(nodes, links, times) {
       .attr("y", (d) => y(d[1]))
       .attr("height", (d) => y(d[0]) - y(d[1]))
       .attr("width", x.bandwidth())
-      .attr("stroke", "black") // Border color
+      .attr("stroke", "#eaecef") // Border color
       .attr("stroke-width", 1); // Border width
   });
 }

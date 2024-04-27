@@ -73,6 +73,8 @@
 #intervalTimeoutValue {
     font-size: 80%;
     text-transform: uppercase;
+    font-weight: bold;
+    color: #2f374f;
 }
 
 .timeout .form-range {
@@ -91,4 +93,19 @@
 .timeout input {
     margin-right: 10px;
     /* Optional: Adjust spacing between input and label */
+}
+
+#current-time {
+    font-size: 80%;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #2f374f;
+}
+
+.bar-input {
+    margin-right: 0.5rem !important;
+}
+
+#scrubber {
+    max-width: 895px;
 }
