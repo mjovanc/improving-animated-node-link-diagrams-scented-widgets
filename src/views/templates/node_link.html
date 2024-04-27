@@ -9,8 +9,6 @@
 
         <div id="scrubber"></div>
 
-        
-
         <form class="form-inline mb-2">
             <p id="current-time">Current timestamp: </p>
             <div class="form-check-inline">
@@ -31,12 +29,12 @@
                 </button>
             </div>
 
-            <div class="form-check-inline">
-                <!-- <label for="intervalTimeoutRange" class="form-label">Interval Timeout</label> -->
+            <div class="form-check-inline timeout">
                 <input type="range" class="form-range" min="100" max="2000" value="1000" step="100" id="intervalTimeoutRange"
                     disabled>
-                <!-- <output id="intervalTimeoutValue">Current Timeout: 1000</output> ms -->
+                <label for="intervalTimeoutRange" class="form-label" id="intervalTimeoutValue">Timeout: 1000 ms</label>
             </div>
+
 
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="inlineRadioOptions" id="edgesRadio" value="edges" checked>

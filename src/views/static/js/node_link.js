@@ -37,7 +37,7 @@ function updateVisualization(nodes, links, times) {
   });
 
   timeoutInput.on("change", function () {
-    intervalTimeoutValue.text("Current Timeout: " + this.value);
+    intervalTimeoutValue.text("Timeout: " + this.value + " ms");
   });
 
   const uniqueNodeIds = new Set(nodes.map((d) => d.id)); // Create a set of unique node IDs
@@ -79,8 +79,8 @@ function updateVisualization(nodes, links, times) {
     .force("collide", d3.forceCollide().radius(40)) // Add a collide force to prevent nodes from overlapping
     .force("x", d3.forceX(width / 2).strength(0.1)) // Add an x-axis force to center nodes horizontally
     .force("y", d3.forceY(height / 2).strength(0.1)) // Add a y-axis force to center nodes vertically
-    .alpha(1)
-    .alphaDecay(0.05) // Slow down alpha decay for smoother animation
+    //.alpha(1)
+    //.alphaDecay(0.005) // Slow down alpha decay for smoother animation
     .on("tick", ticked);
 
   function updateSimulation(timeIndex) {
@@ -105,7 +105,7 @@ function updateVisualization(nodes, links, times) {
     // Update simulation with filtered nodes and links
     simulation.nodes(filteredNodes);
     simulation.force("link").links(filteredLinks);
-    simulation.alpha(1).restart();
+    simulation.alpha(1); // restart here?
 
     // Redraw nodes, links, and labels
     redraw(filteredNodes, filteredLinks);

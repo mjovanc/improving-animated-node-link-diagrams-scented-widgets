@@ -66,10 +66,29 @@
 }
 
 #intervalTimeoutRange {
-    max-width: 200px;
-    padding-top: 13px;
+    max-width: 400px;
+    padding-top: 16px;
 }
 
 #intervalTimeoutValue {
-    display: inline;
+    font-size: 80%;
+    text-transform: uppercase;
+}
+
+.timeout .form-range {
+    /* Your custom styles here */
+    width: 200px;
+    /* Example override */
+}
+
+.timeout {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    /* Set flex direction to row */
+}
+
+.timeout input {
+    margin-right: 10px;
+    /* Optional: Adjust spacing between input and label */
 }
