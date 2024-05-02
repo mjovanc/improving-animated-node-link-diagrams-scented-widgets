@@ -45,9 +45,9 @@ function updateVisualization(nodes, links, times) {
   nodes = nodes.filter((d) => uniqueNodeIds.has(d.id)); // Filter out duplicate nodes
 
   console.log("times.length = " + times.length);
-  console.log("times = " + times);
-  console.log("Original nodes:", nodes);
-  console.log("Original links:", links);
+  //console.log("times = " + times);
+  //console.log("Original nodes:", nodes);
+  //console.log("Original links:", links);
 
   const scrubber = d3
     .select("#scrubber")

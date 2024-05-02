@@ -34,7 +34,7 @@ document
 function visualizeData(data) {
   // Print a message to the console to check if the code reaches this part
   console.log(data);
-  console.log("data = " + data.times);
+  //console.log("data = " + data.times);
   console.log(typeof data.times);
 
   const edgesRadio = d3.select("#edgesRadio");
