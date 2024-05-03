@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify  # Importing request module
 import networkx as nx
 from io import StringIO
+import json
 
 from src.controllers.controller import DataController
 
@@ -66,9 +67,7 @@ def convert_to_json(text_data):
     communities_list = create_communities(converted_data)
     print(communities_list)
 
-    communities_list = ""#[list(comm) for comm in communities]
-
-    return {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': communities_list}
+    return {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': json.dumps(communities_list, default=set_encoder)}
 
 
 def convert_data(data):
@@ -119,9 +118,15 @@ def create_communities(data):
         communities = nx.community.louvain_communities(G, seed=123)
         
         # Store the communities and time in the desired structure
-        com_data.append({"time": time, "communities": [set(community) for community in communities]})
+        com_data.append({"time": time, "communities": [list(community) for community in communities]})
     
     return com_data
+
+
+def set_encoder(obj):
+    if isinstance(obj, set):
+        return list(obj)
+    raise TypeError("Object of type {} is not JSON serializable".format(type(obj)))
 
 
 @app.route('/upload', methods=['POST'])
