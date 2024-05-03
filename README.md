@@ -1,6 +1,4 @@
-# Data Visualization Template
-
-A Simple data visualization project using Flask and D3.js and structured as MVC.
+# Improving Animated Node-Link Diagrams with Scented Widgets
 
 ## Instalation guidelines
 
