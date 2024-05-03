@@ -5,7 +5,7 @@ const svg = d3.select("#my_dataviz"),
 
 let autoplayInterval; // Global variable to store the autoplay interval
 
-function updateVisualization(nodes, links, times) {
+function updateVisualization(nodes, links, times, communities) {
   const currentTimeText = d3.select("#current-time");
   const playBtn = d3.select("#playBtn");
   const pauseBtn = d3.select("#pauseBtn");
@@ -43,6 +43,30 @@ function updateVisualization(nodes, links, times) {
   const uniqueNodeIds = new Set(nodes.map((d) => d.id)); // Create a set of unique node IDs
 
   nodes = nodes.filter((d) => uniqueNodeIds.has(d.id)); // Filter out duplicate nodes
+
+  //TODO: this section should add a new community property with a unique value of their community
+  // however this doesn't seem to add community property. LIke its immutable??
+  console.log("Nodes before update:", nodes);
+
+  communities.forEach((communityData, timeIndex) => {
+    console.log("Processing community data for time index:", timeIndex);
+    const communityIds = new Set(communityData.communities.flat());
+    console.log("Community IDs for time index", timeIndex, ":", communityIds);
+
+    nodes.forEach((node) => {
+      if (communityIds.has(node.id)) {
+        console.log(
+          "Node",
+          node.id,
+          "belongs to community at time index",
+          timeIndex
+        );
+        node.community = timeIndex; // Assigning the time index as the community value
+      }
+    });
+  });
+
+  console.log("Nodes after update:", nodes);
 
   console.log("times.length = " + times.length);
   //console.log("times = " + times);
@@ -113,6 +137,9 @@ function updateVisualization(nodes, links, times) {
   }
 
   function redraw(nodes, links) {
+    // Define a color scale for communities
+    const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
     // Redraw links
     const link = svg
       .selectAll(".link")
@@ -141,7 +168,7 @@ function updateVisualization(nodes, links, times) {
             .append("circle") // append new nodes
             .attr("class", "node") // Add class for styling
             .attr("r", 20)
-            .attr("fill", "rgba(240, 240, 240, 0.90)")
+            .attr("fill", (d) => colorScale(d.community))
             .attr("stroke", "#DFDFDF")
             .call(drag(simulation))
             .on("click", clicked),
