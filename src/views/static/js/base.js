@@ -58,7 +58,8 @@ function visualizeData(data) {
   communitiesRadio.on("change", function (e) {
     if (e.target.checked) {
       console.log("Communities selected...");
-      communitiesVisualization(data.nodes, data.links, data.times);
+      console.log(data.communities);
+      communitiesVisualization(data.communities);
     }
   });
 

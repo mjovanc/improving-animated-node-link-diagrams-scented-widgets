@@ -197,72 +197,63 @@ function nodesVisualization(nodes, links, times) {
     .attr("d", line);
 }
 
-function communitiesVisualization(nodes, links, times) {
+function communitiesVisualization(communities) {
   // Remove any existing SVG elements
   d3.select("#bar_chart").selectAll("svg").remove();
 
+  // Get the maximum number of communities across all time periods
+  const maxCommunities = Math.max(
+    ...communities.map((d) => d.communities.length)
+  );
+
   // Parse the Data
-  d3.csv(
-    "https://gist.githubusercontent.com/mjovanc/1da7cac899ada0837caeded5c83afc59/raw/1cd67725cc0941be1470be840e0936fee81a98a0/stacked_data.csv"
-  ).then((data) => {
-    // List of subgroups = header of the csv files = soil condition here
-    const subgroups = data.columns.slice(1);
-
-    // List of groups = species here = value of the first column called group -> I show them on the X axis
-    const groups = data.map((d) => d.group);
-
-    console.log(groups.length);
-
-    // Append the svg object to the body of the page
-    var bar_svg = d3
-      .select("#bar_chart")
-      .append("svg")
-      .attr("width", bar_width)
-      .attr("height", bar_height)
-      .append("g")
-      .attr("width", bar_width); // Set the width of the <g> tag
-    //.attr("transform",
-    //    "translate(" + margin.left + "," + margin.top + ")");
-
-    // Add X axis
-    const x = d3.scaleBand().domain(groups).range([0, width]);
-    // .padding([0.2])
-    // bar_svg.append("g")
-    //   .attr("transform", `translate(0, ${height})`)
-    //   .call(d3.axisBottom(x).tickSizeOuter(0));
-
-    // Add Y axis
-    const y = d3.scaleLinear().domain([0, 50]).range([bar_height, 0]);
-    // bar_svg.append("g")
-    //   .call(d3.axisLeft(y));
-
-    // color palette = one color per subgroup
-    //TODO: the colors should be changed depending on Edges/Communities chart
-    const color = d3
-      .scaleOrdinal()
-      .domain(subgroups)
-      .range(["#336CF7", "#A5A6DC", "#EEEDFF"]);
-
-    //stack the data? --> stack per subgroup
-    const stackedData = d3.stack().keys(subgroups)(data);
-
-    // Show the bars
-    bar_svg
-      .append("g")
-      .selectAll("g")
-      // Enter in the stack data = loop key per key = group per group
-      .data(stackedData)
-      .join("g")
-      .attr("fill", (d) => color(d.key))
-      .selectAll("rect")
-      // enter a second time = loop subgroup per subgroup to add all rectangles
-      .data((d) => d)
-      .join("rect")
-      .attr("x", (d) => x(d.data.group))
-      .attr("y", (d) => y(d[1]))
-      .attr("height", (d) => y(d[0]) - y(d[1]))
-      .attr("width", x.bandwidth())
-      .attr("stroke", "#eaecef") // Border color
-      .attr("stroke-width", 1); // Border width
+  // Generate an array of objects where each object represents a time period
+  const data = communities.map((d) => {
+    const totalItems = d.communities.reduce((acc, val) => acc + val.length, 0);
+    // Calculate the percentage of each community for the total items
+    const percentages = d.communities.map(
+      (community) => (community.length / totalItems) * 100
+    );
+    return { time: d.time, percentages: percentages };
   });
+
+  // List of groups = time periods
+  const groups = data.map((d) => d.time);
+
+  // Append the svg object to the body of the page
+  var bar_svg = d3
+    .select("#bar_chart")
+    .append("svg")
+    .attr("width", bar_width)
+    .attr("height", bar_height)
+    .append("g")
+    .attr("width", bar_width); // Set the width of the <g> tag
+
+  // Add X axis
+  const x = d3.scaleBand().domain(groups).range([0, width]);
+
+  // Add Y axis
+  const y = d3.scaleLinear().domain([0, 100]).range([bar_height, 0]);
+
+  // color palette = one color per subgroup
+  //TODO: the colors should be changed depending on Edges/Communities chart
+  const color = d3.scaleOrdinal().range(["#336CF7", "#A5A6DC", "#EEEDFF"]);
+
+  // Show the bars
+  bar_svg
+    .append("g")
+    .selectAll("g")
+    .data(data)
+    .join("g")
+    .attr("transform", (d) => `translate(${x(d.time)},0)`)
+    .selectAll("rect")
+    .data((d) => d.percentages)
+    .join("rect")
+    .attr("x", 0)
+    .attr("y", (d) => y(d))
+    .attr("height", (d) => bar_height - y(d))
+    .attr("width", x.bandwidth())
+    .attr("fill", (d, i) => color(i))
+    .attr("stroke", "#eaecef") // Border color
+    .attr("stroke-width", 1); // Border width
 }

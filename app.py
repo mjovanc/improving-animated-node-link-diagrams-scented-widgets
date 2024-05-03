@@ -65,9 +65,9 @@ def convert_to_json(text_data):
     converted_data = convert_data(data)
     #print(convert_data)
     communities_list = create_communities(converted_data)
-    print(communities_list)
+    # print(communities_list)
 
-    return {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': json.dumps(communities_list, default=set_encoder)}
+    return {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': communities_list}
 
 
 def convert_data(data):
