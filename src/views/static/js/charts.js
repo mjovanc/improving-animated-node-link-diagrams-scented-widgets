@@ -141,24 +141,19 @@ function communitiesVisualization(communities) {
   // Remove any existing SVG elements
   d3.select("#bar_chart").selectAll("svg").remove();
 
-  // Get the maximum number of communities across all time periods
-  const maxCommunities = Math.max(
-    ...communities.map((d) => d.communities.length)
-  );
-
   // Parse the Data
-  // Generate an array of objects where each object represents a time period
-  const data = communities.map((d) => {
-    const totalItems = d.communities.reduce((acc, val) => acc + val.length, 0);
-    // Calculate the percentage of each community for the total items
-    const percentages = d.communities.map(
-      (community) => (community.length / totalItems) * 100
-    );
-    return { time: d.time, percentages: percentages };
-  });
+  const data = communities.map((row) => ({
+    time: row[0],
+    values: row.slice(1, 4), // Extract values for sections A, B, and C only
+    total: row[4], // Total value of A + B + C
+  }));
+
+  console.log("Parsed Data:", data);
 
   // List of groups = time periods
   const groups = data.map((d) => d.time);
+
+  console.log("Groups:", groups);
 
   // Append the svg object to the body of the page
   var bar_svg = d3
@@ -166,34 +161,42 @@ function communitiesVisualization(communities) {
     .append("svg")
     .attr("width", bar_width)
     .attr("height", bar_height)
-    .append("g")
-    .attr("width", bar_width); // Set the width of the <g> tag
+    .append("g");
 
   // Add X axis
-  const x = d3.scaleBand().domain(groups).range([0, width]);
+  const x = d3.scaleBand().domain(groups).range([0, bar_width]).padding(0.1);
+
+  console.log("X Scale Domain:", x.domain());
 
   // Add Y axis
-  const y = d3.scaleLinear().domain([0, 100]).range([bar_height, 0]);
+  const y = d3
+    .scaleLinear()
+    .domain([0, d3.max(data, (d) => d.total)])
+    .range([bar_height, 0]); // Adjusted range
 
-  // color palette = one color per subgroup
-  //TODO: the colors should be changed depending on Edges/Communities chart
-  const color = d3.scaleOrdinal().range(["#336CF7", "#A5A6DC", "#EEEDFF"]);
+  console.log("Y Scale Domain:", y.domain());
+
+  // Color palette
+  const color = d3.scaleOrdinal().range(["#336CF7", "#A5A6DC", "#C0A975"]);
 
   // Show the bars
   bar_svg
-    .append("g")
     .selectAll("g")
     .data(data)
     .join("g")
     .attr("transform", (d) => `translate(${x(d.time)},0)`)
     .selectAll("rect")
-    .data((d) => d.percentages)
+    .data((d) => d.values)
     .join("rect")
     .attr("x", 0)
-    .attr("y", (d) => y(d))
-    .attr("height", (d) => bar_height - y(d))
+    .attr("y", (d, i, nodes) => {
+      const previousBars = d3.sum(
+        nodes.slice(0, i).map((node) => Number(d3.select(node).attr("height")))
+      );
+      return y(previousBars + d);
+    })
+    .attr("height", (d) => y(0) - y(d))
     .attr("width", x.bandwidth())
-    .attr("fill", (d, i) => color(i))
-    .attr("stroke", "black") // Border color should be -> #eaecef
-    .attr("stroke-width", 1); // Border width
+    .attr("fill", (_, i) => color(i));
+  // .attr("stroke", "#eaecef"); // Border color
 }

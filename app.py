@@ -65,9 +65,12 @@ def convert_to_json(text_data):
     converted_data = convert_data(data)
     #print(convert_data)
     communities_list = create_communities(converted_data)
-    print(communities_list)
+    # print(communities_list)
 
-    return {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': communities_list}
+    categorized_communities = categorize_communities(communities_list)
+    print(categorized_communities)
+
+    return {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': categorized_communities}
 
 
 def convert_data(data):
@@ -121,6 +124,43 @@ def create_communities(data):
         com_data.append({"time": time, "communities": [list(community) for community in communities]})
     
     return com_data
+
+
+def categorize_communities(dataset):
+    """
+    Categorize communities in the dataset based on size distribution.
+
+    Args:
+        dataset (list): A dataset containing communities.
+
+    Returns:
+        list: Resulting dataset with column headers and categorized community counts.
+    """
+    data = []
+    for entry in dataset:
+        time = entry['time']
+        communities = entry['communities']
+
+        # Initialize counters for categories A, B, and C
+        counts = {'A': 0, 'B': 0, 'C': 0}
+
+        # Categorize communities based on size distribution
+        for community in communities:
+            size = len(community)
+            if size < 3:
+                counts['A'] += 1
+            elif size < 6:
+                counts['B'] += 1
+            else:
+                counts['C'] += 1
+
+        # Calculate total number of communities
+        total_communities = len(communities)
+
+        # Append the row to data1
+        data.append([time, counts['A'], counts['B'], counts['C'], total_communities])
+
+    return data
 
 
 def set_encoder(obj):
