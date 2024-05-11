@@ -8,49 +8,21 @@ function countEdgesBetweenTimes(links, start, end) {
 }
 
 function processEdgesData(nodes, links, times) {
-  const totalTimestamps = times.length;
+  const edgeCounts = {};
 
-  // Check if the number of timestamps is less than or equal to 20
-  if (totalTimestamps <= 20) {
-    // If so, calculate edge counts directly without intervals
-    const edgeCounts = {};
-    for (let i = 0; i < totalTimestamps; i++) {
-      const time = times[i];
-      edgeCounts[time] = countEdgesBetweenTimes(links, time, time + 1);
-    }
-    // Convert edgeCounts object into an array of objects
-    const sampleData = Object.entries(edgeCounts).map(([time, count]) => ({
-      group: `Time ${time}`,
-      value: count,
-    }));
-    return sampleData;
-  } else {
-    // Otherwise, apply the interval logic
-    const maxBars = 100;
-    const intervalSize = Math.ceil(totalTimestamps / maxBars);
-    const edgeCounts = {};
-    for (let i = 0; i < totalTimestamps - 1; i++) {
-      const start = times[i];
-      const end = times[i + 1];
-      const intervalIndex = Math.floor(start / intervalSize);
-      if (!edgeCounts[intervalIndex]) {
-        edgeCounts[intervalIndex] = 0;
-      }
-      edgeCounts[intervalIndex] += countEdgesBetweenTimes(links, start, end);
-    }
-    const sampleData = Object.entries(edgeCounts).map(
-      ([intervalIndex, count]) => ({
-        group: `Interval ${
-          parseInt(intervalIndex) * intervalSize + 1
-        }-${Math.min(
-          (parseInt(intervalIndex) + 1) * intervalSize,
-          totalTimestamps
-        )}`,
-        value: count,
-      })
-    );
-    return sampleData;
+  // Calculate edge counts for each timestamp
+  for (let i = 0; i < times.length; i++) {
+    const time = times[i];
+    edgeCounts[time] = countEdgesBetweenTimes(links, time, time + 1);
   }
+
+  // Convert edgeCounts object into an array of objects
+  const sampleData = Object.entries(edgeCounts).map(([time, count]) => ({
+    group: `Time ${time}`,
+    value: count,
+  }));
+
+  return sampleData;
 }
 
 function countUniqueNodesBetweenTimes(nodes, start, end) {
@@ -64,53 +36,21 @@ function countUniqueNodesBetweenTimes(nodes, start, end) {
 }
 
 function processNodesData(nodes, links, times) {
-  const totalTimestamps = times.length;
-  const maxBars = 20;
+  const nodeCounts = {};
 
-  // Check if the number of timestamps is less than or equal to 20
-  if (totalTimestamps <= 20) {
-    // If so, calculate unique node counts directly without intervals
-    const nodeCounts = {};
-    for (let i = 0; i < totalTimestamps; i++) {
-      const time = times[i];
-      nodeCounts[time] = countUniqueNodesBetweenTimes(nodes, time, time);
-    }
-    // Convert nodeCounts object into an array of objects
-    const sampleData = Object.entries(nodeCounts).map(([time, count]) => ({
-      group: `Time ${time}`,
-      value: count,
-    }));
-    return sampleData;
-  } else {
-    // Otherwise, apply the interval logic
-    const intervalSize = Math.ceil(totalTimestamps / maxBars);
-    const nodeCounts = {};
-    let intervalIndex = 0;
-    let count = 0;
-    for (let i = 0; i < times.length; i++) {
-      const time = times[i];
-      if (!nodeCounts[intervalIndex]) {
-        nodeCounts[intervalIndex] = 0;
-      }
-      nodeCounts[intervalIndex] += countUniqueNodesBetweenTimes(
-        nodes,
-        time,
-        time
-      );
-      count++;
-      if (count >= intervalSize || i === times.length - 1) {
-        intervalIndex++;
-        count = 0;
-      }
-    }
-    return Object.entries(nodeCounts).map(([intervalIndex, count]) => ({
-      group: `Interval ${parseInt(intervalIndex) * intervalSize + 1}-${Math.min(
-        (parseInt(intervalIndex) + 1) * intervalSize,
-        totalTimestamps
-      )}`,
-      value: count,
-    }));
+  // Calculate unique node counts for each timestamp
+  for (let i = 0; i < times.length; i++) {
+    const time = times[i];
+    nodeCounts[time] = countUniqueNodesBetweenTimes(nodes, time, time);
   }
+
+  // Convert nodeCounts object into an array of objects
+  const sampleData = Object.entries(nodeCounts).map(([time, count]) => ({
+    group: `Time ${time}`,
+    value: count,
+  }));
+
+  return sampleData;
 }
 
 function edgesVisualization(nodes, links, times) {
@@ -151,7 +91,7 @@ function edgesVisualization(nodes, links, times) {
     .attr("height", (d) => bar_height - y(d.value))
     .attr("width", x.bandwidth())
     .attr("fill", "#336cf7")
-    .attr("stroke", "#eaecef") // Border color
+    // .attr("stroke", "#eaecef") // Border color
     .attr("stroke-width", 1); // Border width
 }
 
@@ -254,6 +194,6 @@ function communitiesVisualization(communities) {
     .attr("height", (d) => bar_height - y(d))
     .attr("width", x.bandwidth())
     .attr("fill", (d, i) => color(i))
-    .attr("stroke", "#eaecef") // Border color
+    .attr("stroke", "black") // Border color should be -> #eaecef
     .attr("stroke-width", 1); // Border width
 }
