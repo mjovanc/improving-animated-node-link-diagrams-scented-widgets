@@ -58,7 +58,7 @@ function edgesVisualization(nodes, links, times) {
   d3.select("#bar_chart").selectAll("svg").remove();
 
   const sampleData = processEdgesData(nodes, links, times);
-  console.log(JSON.stringify(sampleData, null, 2));
+  // console.log(JSON.stringify(sampleData, null, 2));
 
   // Append the svg object to the body of the page
   var bar_svg = d3

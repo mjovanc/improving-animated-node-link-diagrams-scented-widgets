@@ -34,8 +34,6 @@ document
 function visualizeData(data) {
   // Print a message to the console to check if the code reaches this part
   console.log(data);
-  //console.log("data = " + data.times);
-  console.log(typeof data.times);
 
   const edgesRadio = d3.select("#edgesRadio");
   const nodesRadio = d3.select("#nodesRadio");
@@ -63,7 +61,6 @@ function visualizeData(data) {
     }
   });
 
-  console.log("Edges selected default...");
   edgesVisualization(data.nodes, data.links, data.times);
 
   updateVisualization(data.nodes, data.links, data.times, data.communities_raw);

@@ -6,7 +6,6 @@ const svg = d3.select("#my_dataviz"),
 let autoplayInterval; // Global variable to store the autoplay interval
 
 function getNodeColor(node, communities_raw, currentTimeIndex) {
-  console.log("NODE ID = ", node.id);
   const communityColorPalette = [
     "#FF0000",
     "#FFA500",
@@ -118,6 +117,8 @@ function getNodeColor(node, communities_raw, currentTimeIndex) {
     (obj) => obj.time === currentTimeIndex
   );
 
+  console.log("timeIndex = ", timeIndex);
+
   if (timeIndex === -1) {
     console.log(`Time ${currentTimeIndex} not found in communities_raw`);
     return "rgb(220, 220, 220)"; // Default color if time is not found
@@ -125,19 +126,22 @@ function getNodeColor(node, communities_raw, currentTimeIndex) {
 
   const communitiesAtIndex = communities_raw[timeIndex].communities;
 
+  console.log("communitiesAtIndex = ", communitiesAtIndex);
+
   // Iterate over each sub-array within communitiesAtIndex
   for (let i = 0; i < communitiesAtIndex.length; i++) {
     const subarray = communitiesAtIndex[i];
-    console.log("SUBARRAY = ", subarray);
+    // console.log("SUBARRAY = ", subarray);
+
     // Convert both node id and values in subarray to strings before comparison
     if (subarray.map(String).includes(String(node.id))) {
+      console.log(`${node.id}`);
+      console.log(`${communityColorPalette[i % communityColorPalette.length]}`);
       return communityColorPalette[i % communityColorPalette.length];
     }
   }
 
   console.log(`Node = ${node.id} not found in any community array`);
-  console.log(`Communities array = ${communitiesAtIndex}`);
-
   return "rgb(220, 220, 220)"; // Default color if node.id is not found in any sub-array
 }
 
@@ -181,9 +185,9 @@ function updateVisualization(nodes, links, times, communities_raw) {
   nodes = nodes.filter((d) => uniqueNodeIds.has(d.id)); // Filter out duplicate nodes
 
   communities_raw.forEach((communityData, timeIndex) => {
-    console.log("Processing community data for time index:", timeIndex);
+    // console.log("Processing community data for time index:", timeIndex);
     const communityIds = new Set(communityData.communities.flat());
-    console.log("Community IDs for time index", timeIndex, ":", communityIds);
+    // console.log("Community IDs for time index", timeIndex, ":", communityIds);
 
     nodes.forEach((node) => {
       if (communityIds.has(node.id)) {
@@ -198,8 +202,7 @@ function updateVisualization(nodes, links, times, communities_raw) {
     });
   });
 
-  const scrubber = d3
-    .select("#scrubber")
+  d3.select("#scrubber")
     .append("input")
     .attr("type", "range")
     .attr("min", 0)
