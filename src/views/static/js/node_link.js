@@ -8,16 +8,109 @@ let autoplayInterval; // Global variable to store the autoplay interval
 function getNodeColor(node, communities_raw, currentTimeIndex) {
   console.log("NODE ID = ", node.id);
   const communityColorPalette = [
-    "blue",
-    "green",
-    "red",
-    "orange",
-    "purple",
-    "yellow",
-    "cyan",
-    "magenta",
-    "lime",
-    "pink",
+    "#FF0000",
+    "#FFA500",
+    "#FFFF00",
+    "#008000",
+    "#0000FF",
+    "#4B0082",
+    "#EE82EE",
+    "#800000",
+    "#FFC0CB",
+    "#FF69B4",
+    "#FF4500",
+    "#FFD700",
+    "#ADFF2F",
+    "#00FF00",
+    "#00FFFF",
+    "#1E90FF",
+    "#8A2BE2",
+    "#9400D3",
+    "#FFFFFF",
+    "#000000",
+    "#FF6347",
+    "#FFA07A",
+    "#FF7F50",
+    "#FFDAB9",
+    "#FFE4B5",
+    "#F0E68C",
+    "#DAA520",
+    "#BDB76B",
+    "#556B2F",
+    "#32CD32",
+    "#3CB371",
+    "#008080",
+    "#20B2AA",
+    "#00FA9A",
+    "#2E8B57",
+    "#66CDAA",
+    "#AFEEEE",
+    "#4682B4",
+    "#7FFFD4",
+    "#40E0D0",
+    "#87CEEB",
+    "#6495ED",
+    "#4169E1",
+    "#1E90FF",
+    "#191970",
+    "#000080",
+    "#B0E0E6",
+    "#00BFFF",
+    "#00CED1",
+    "#00FFFF",
+    "#7FFFD4",
+    "#40E0D0",
+    "#48D1CC",
+    "#20B2AA",
+    "#008B8B",
+    "#008080",
+    "#5F9EA0",
+    "#4682B4",
+    "#6495ED",
+    "#4169E1",
+    "#0000CD",
+    "#00008B",
+    "#000080",
+    "#87CEFA",
+    "#87CEEB",
+    "#00BFFF",
+    "#1E90FF",
+    "#6495ED",
+    "#4682B4",
+    "#4169E1",
+    "#0000FF",
+    "#0000CD",
+    "#00008B",
+    "#191970",
+    "#7B68EE",
+    "#483D8B",
+    "#663399",
+    "#9400D3",
+    "#800080",
+    "#8A2BE2",
+    "#4B0082",
+    "#483D8B",
+    "#6A5ACD",
+    "#7B68EE",
+    "#8A2BE2",
+    "#800080",
+    "#BA55D3",
+    "#9370DB",
+    "#8B008B",
+    "#9932CC",
+    "#9400D3",
+    "#800080",
+    "#8A2BE2",
+    "#4B0082",
+    "#483D8B",
+    "#6A5ACD",
+    "#7B68EE",
+    "#8A2BE2",
+    "#800080",
+    "#BA55D3",
+    "#9370DB",
+    "#8B008B",
+    "#9932CC",
   ];
 
   // Find the index of the object with the matching 'time' property
@@ -87,10 +180,6 @@ function updateVisualization(nodes, links, times, communities_raw) {
 
   nodes = nodes.filter((d) => uniqueNodeIds.has(d.id)); // Filter out duplicate nodes
 
-  //TODO: this section should add a new community property with a unique value of their community
-  // however this doesn't seem to add community property. LIke its immutable??
-  console.log("Nodes before update:", nodes);
-
   communities_raw.forEach((communityData, timeIndex) => {
     console.log("Processing community data for time index:", timeIndex);
     const communityIds = new Set(communityData.communities.flat());
@@ -108,13 +197,6 @@ function updateVisualization(nodes, links, times, communities_raw) {
       }
     });
   });
-
-  console.log("Nodes after update:", nodes);
-
-  console.log("times.length = " + times.length);
-  //console.log("times = " + times);
-  //console.log("Original nodes:", nodes);
-  //console.log("Original links:", links);
 
   const scrubber = d3
     .select("#scrubber")
@@ -180,18 +262,14 @@ function updateVisualization(nodes, links, times, communities_raw) {
   }
 
   function redraw(nodes, links) {
-    // Define a color scale for communities
-    const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
-    // Redraw links
     const link = svg
       .selectAll(".link")
       .data(links, (d) => d.source.id + "-" + d.target.id)
       .join(
         (enter) =>
           enter
-            .insert("line", ".node") // insert lines before nodes
-            .attr("class", "link") // add class for styling
+            .insert("line", ".node")
+            .attr("class", "link")
             .attr("stroke", "#999")
             .attr("stroke-width", "2"),
         (update) => update,
@@ -201,15 +279,14 @@ function updateVisualization(nodes, links, times, communities_raw) {
     // Disable transitions for links
     link.transition().duration(0);
 
-    // Redraw nodes
     const node = svg
       .selectAll(".node")
       .data(nodes, (d) => d.id)
       .join(
         (enter) =>
           enter
-            .append("circle") // append new nodes
-            .attr("class", "node") // Add class for styling
+            .append("circle")
+            .attr("class", "node")
             .attr("r", 20)
             .attr("fill", (d) =>
               getNodeColor(d, communities_raw, currentTimeIndex)
