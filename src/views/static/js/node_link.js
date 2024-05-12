@@ -91,7 +91,7 @@ function updateVisualization(nodes, links, times, communities_raw) {
   // however this doesn't seem to add community property. LIke its immutable??
   console.log("Nodes before update:", nodes);
 
-  communities.forEach((communityData, timeIndex) => {
+  communities_raw.forEach((communityData, timeIndex) => {
     console.log("Processing community data for time index:", timeIndex);
     const communityIds = new Set(communityData.communities.flat());
     console.log("Community IDs for time index", timeIndex, ":", communityIds);
@@ -211,15 +211,9 @@ function updateVisualization(nodes, links, times, communities_raw) {
             .append("circle") // append new nodes
             .attr("class", "node") // Add class for styling
             .attr("r", 20)
-<<<<<<< HEAD
-            .attr("fill", (d) => colorScale(d.community))
-=======
-            .attr("fill", (d) => {
-              let color = getNodeColor(d, communities_raw, currentTimeIndex);
-              console.log("The color is = ", color);
-              return color;
-            })
->>>>>>> cce616b (Fixing some coloring of communities)
+            .attr("fill", (d) =>
+              getNodeColor(d, communities_raw, currentTimeIndex)
+            )
             .attr("stroke", "#DFDFDF")
             .call(drag(simulation))
             .on("click", clicked),

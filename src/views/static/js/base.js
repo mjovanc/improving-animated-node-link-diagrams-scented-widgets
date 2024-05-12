@@ -58,19 +58,15 @@ function visualizeData(data) {
   communitiesRadio.on("change", function (e) {
     if (e.target.checked) {
       console.log("Communities selected...");
-      console.log(data.communities);
-      communitiesVisualization(data.communities);
+      console.log(data.communities_raw);
+      communitiesVisualization(data.communities_raw);
     }
   });
 
   console.log("Edges selected default...");
   edgesVisualization(data.nodes, data.links, data.times);
 
-<<<<<<< HEAD
-  updateVisualization(data.nodes, data.links, data.times, data.communities);
-=======
   updateVisualization(data.nodes, data.links, data.times, data.communities_raw);
->>>>>>> cce616b (Fixing some coloring of communities)
 
   closeNav();
   // D3.js code to visualize data
