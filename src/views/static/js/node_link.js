@@ -5,7 +5,50 @@ const svg = d3.select("#my_dataviz"),
 
 let autoplayInterval; // Global variable to store the autoplay interval
 
-function updateVisualization(nodes, links, times, communities) {
+function getNodeColor(node, communities_raw, currentTimeIndex) {
+  console.log("NODE ID = ", node.id);
+  const communityColorPalette = [
+    "blue",
+    "green",
+    "red",
+    "orange",
+    "purple",
+    "yellow",
+    "cyan",
+    "magenta",
+    "lime",
+    "pink",
+  ];
+
+  // Find the index of the object with the matching 'time' property
+  const timeIndex = communities_raw.findIndex(
+    (obj) => obj.time === currentTimeIndex
+  );
+
+  if (timeIndex === -1) {
+    console.log(`Time ${currentTimeIndex} not found in communities_raw`);
+    return "rgb(220, 220, 220)"; // Default color if time is not found
+  }
+
+  const communitiesAtIndex = communities_raw[timeIndex].communities;
+
+  // Iterate over each sub-array within communitiesAtIndex
+  for (let i = 0; i < communitiesAtIndex.length; i++) {
+    const subarray = communitiesAtIndex[i];
+    console.log("SUBARRAY = ", subarray);
+    // Convert both node id and values in subarray to strings before comparison
+    if (subarray.map(String).includes(String(node.id))) {
+      return communityColorPalette[i % communityColorPalette.length];
+    }
+  }
+
+  console.log(`Node = ${node.id} not found in any community array`);
+  console.log(`Communities array = ${communitiesAtIndex}`);
+
+  return "rgb(220, 220, 220)"; // Default color if node.id is not found in any sub-array
+}
+
+function updateVisualization(nodes, links, times, communities_raw) {
   const currentTimeText = d3.select("#current-time");
   const playBtn = d3.select("#playBtn");
   const pauseBtn = d3.select("#pauseBtn");
@@ -168,7 +211,15 @@ function updateVisualization(nodes, links, times, communities) {
             .append("circle") // append new nodes
             .attr("class", "node") // Add class for styling
             .attr("r", 20)
+<<<<<<< HEAD
             .attr("fill", (d) => colorScale(d.community))
+=======
+            .attr("fill", (d) => {
+              let color = getNodeColor(d, communities_raw, currentTimeIndex);
+              console.log("The color is = ", color);
+              return color;
+            })
+>>>>>>> cce616b (Fixing some coloring of communities)
             .attr("stroke", "#DFDFDF")
             .call(drag(simulation))
             .on("click", clicked),

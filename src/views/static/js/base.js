@@ -66,7 +66,11 @@ function visualizeData(data) {
   console.log("Edges selected default...");
   edgesVisualization(data.nodes, data.links, data.times);
 
+<<<<<<< HEAD
   updateVisualization(data.nodes, data.links, data.times, data.communities);
+=======
+  updateVisualization(data.nodes, data.links, data.times, data.communities_raw);
+>>>>>>> cce616b (Fixing some coloring of communities)
 
   closeNav();
   // D3.js code to visualize data

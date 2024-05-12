@@ -63,14 +63,13 @@ def convert_to_json(text_data):
             times.add(int(timestamp))  # Convert timestamp to integer and add to times set
 
     converted_data = convert_data(data)
-    #print(convert_data)
     communities_list = create_communities(converted_data)
-    # print(communities_list)
+    print(communities_list)
 
     categorized_communities = categorize_communities(communities_list)
-    print(categorized_communities)
+    # print(categorized_communities)
 
-    return {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': categorized_communities}
+    return {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': categorized_communities, 'communities_raw': communities_list}
 
 
 def convert_data(data):
