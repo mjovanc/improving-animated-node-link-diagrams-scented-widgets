@@ -291,9 +291,10 @@ function updateVisualization(nodes, links, times, communities_raw) {
             .append("circle")
             .attr("class", "node")
             .attr("r", 20)
-            .attr("fill", (d) =>
-              getNodeColor(d, communities_raw, currentTimeIndex)
-            )
+            .attr("fill", "rgba(240, 240, 240, 0.90)")
+              // .attr("fill", (d) =>
+              //     getNodeColor(d, communities_raw, currentTimeIndex)
+              // )
             .attr("stroke", "#DFDFDF")
             .call(drag(simulation))
             .on("click", clicked),
