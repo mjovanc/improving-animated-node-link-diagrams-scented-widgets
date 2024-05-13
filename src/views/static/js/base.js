@@ -57,7 +57,7 @@ function visualizeData(data) {
     if (e.target.checked) {
       console.log("Communities selected...");
       console.log(data.communities_raw);
-      communitiesVisualization(data.communities_raw);
+      communitiesVisualization(data.communities);
     }
   });
 
