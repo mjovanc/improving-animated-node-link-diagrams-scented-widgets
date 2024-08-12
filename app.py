@@ -64,7 +64,7 @@ def convert_to_json(text_data):
 
     converted_data = convert_data(data)
     communities_list = create_communities(converted_data)
-    print(communities_list)
+    # print(communities_list)
 
     categorized_communities = categorize_communities(communities_list)
     # print(categorized_communities)
