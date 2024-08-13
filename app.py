@@ -64,13 +64,29 @@ def convert_to_json(text_data):
 
     converted_data = convert_data(data)
     communities_list = create_communities(converted_data)
-    # print(communities_list)
+
+    # Create a mapping from node id to community id for each time
+    node_to_community = {}
+    for entry in communities_list:
+        time = entry['time']
+        for i, community in enumerate(entry['communities']):
+            for node_id in community:
+                node_to_community[node_id] = {'time': time, 'community': i}
+
+    # Assign community information to nodes
+    for node in nodes:
+        node_info = node_to_community.get(int(node['id']), {'community': -1})
+        node['community'] = node_info['community']
 
     categorized_communities = categorize_communities(communities_list)
-    # print(categorized_communities)
 
-    return {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': categorized_communities, 'communities_raw': communities_list}
-
+    return {
+        'nodes': nodes,
+        'links': links,
+        'times': sorted(list(times)),
+        'communities': categorized_communities,
+        'communities_raw': communities_list
+    }
 
 def convert_data(data):
     new_data = []

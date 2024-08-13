@@ -117,32 +117,19 @@ function getNodeColor(node, communities_raw, currentTimeIndex) {
     (obj) => obj.time === currentTimeIndex
   );
 
-  console.log("timeIndex = ", timeIndex);
-
   if (timeIndex === -1) {
-    console.log(`Time ${currentTimeIndex} not found in communities_raw`);
     return "rgb(220, 220, 220)"; // Default color if time is not found
   }
 
   const communitiesAtIndex = communities_raw[timeIndex].communities;
 
-  console.log("communitiesAtIndex = ", communitiesAtIndex);
-
-  // Iterate over each sub-array within communitiesAtIndex
-  for (let i = 0; i < communitiesAtIndex.length; i++) {
-    const subarray = communitiesAtIndex[i];
-    // console.log("SUBARRAY = ", subarray);
-
-    // Convert both node id and values in subarray to strings before comparison
-    if (subarray.map(String).includes(String(node.id))) {
-      console.log(`${node.id}`);
-      console.log(`${communityColorPalette[i % communityColorPalette.length]}`);
-      return communityColorPalette[i % communityColorPalette.length];
-    }
+  // Find the community index for the current node
+  const communityIndex = node.community;
+  if (communityIndex === undefined || communityIndex === -1) {
+    return "rgb(220, 220, 220)"; // Default color if no community found
   }
 
-  console.log(`Node = ${node.id} not found in any community array`);
-  return "rgb(220, 220, 220)"; // Default color if node.id is not found in any sub-array
+  return communityColorPalette[communityIndex % communityColorPalette.length];
 }
 
 function updateVisualization(nodes, links, times, communities_raw) {
@@ -291,15 +278,17 @@ function updateVisualization(nodes, links, times, communities_raw) {
             .append("circle")
             .attr("class", "node")
             .attr("r", 20)
-            .attr("fill", "rgba(240, 240, 240, 0.90)")
-              // .attr("fill", (d) =>
-              //     getNodeColor(d, communities_raw, currentTimeIndex)
-              // )
+            .attr("fill", (d) =>
+              getNodeColor(d, communities_raw, currentTimeIndex)
+            )
             .attr("stroke", "#DFDFDF")
             .call(drag(simulation))
             .on("click", clicked),
-        (update) => update, // update existing nodes
-        (exit) => exit.remove() // remove nodes that are not in the data
+        (update) =>
+          update.attr("fill", (d) =>
+            getNodeColor(d, communities_raw, currentTimeIndex)
+          ), // Update color on existing nodes
+        (exit) => exit.remove()
       );
 
     // Disable transitions for nodes
