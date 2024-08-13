@@ -317,8 +317,9 @@ function updateVisualization(nodes, links, times, communities_raw) {
             .append("text")
             .attr("class", "label")
             .text((d) => d.id)
-            .attr("font-size", "16px")
-            .attr("dx", -10)
+            .attr("font-size", "12px")
+            .attr("font-weight", "bold")
+            .attr("dx", -15)
             .attr("dy", 5),
         (update) => update
       );
