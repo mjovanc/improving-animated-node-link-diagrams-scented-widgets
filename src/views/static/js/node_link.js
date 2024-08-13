@@ -5,6 +5,14 @@ const svg = d3.select("#my_dataviz"),
 
 let autoplayInterval; // Global variable to store the autoplay interval
 
+function initializeNodePositions(nodes) {
+  nodes.forEach((node, index) => {
+    // Set fixed positions based on index or custom logic
+    node.x = width / 2 + (index % 10) * 50 - 250;
+    node.y = height / 2 + Math.floor(index / 10) * 50 - 250;
+  });
+}
+
 function getNodeColor(node, communities_raw, currentTimeIndex) {
   const communityColorPalette = [
     "#FF0000",
@@ -241,10 +249,13 @@ function updateVisualization(nodes, links, times, communities_raw) {
     // Filter links based on the time index
     const filteredLinks = links.filter((link) => link.time === timeIndex);
 
+    // Initialize node positions
+    initializeNodePositions(filteredNodes);
+
     // Update simulation with filtered nodes and links
     simulation.nodes(filteredNodes);
     simulation.force("link").links(filteredLinks);
-    simulation.alpha(1); // restart here?
+    simulation.alpha(1).restart(); // Ensure the simulation restarts
 
     // Redraw nodes, links, and labels
     redraw(filteredNodes, filteredLinks);
@@ -252,6 +263,7 @@ function updateVisualization(nodes, links, times, communities_raw) {
   }
 
   function redraw(nodes, links) {
+    // Redraw links
     const link = svg
       .selectAll(".link")
       .data(links, (d) => d.source.id + "-" + d.target.id)
@@ -269,6 +281,7 @@ function updateVisualization(nodes, links, times, communities_raw) {
     // Disable transitions for links
     link.transition().duration(0);
 
+    // Redraw nodes
     const node = svg
       .selectAll(".node")
       .data(nodes, (d) => d.id)
@@ -287,7 +300,7 @@ function updateVisualization(nodes, links, times, communities_raw) {
         (update) =>
           update.attr("fill", (d) =>
             getNodeColor(d, communities_raw, currentTimeIndex)
-          ), // Update color on existing nodes
+          ),
         (exit) => exit.remove()
       );
 
@@ -301,20 +314,17 @@ function updateVisualization(nodes, links, times, communities_raw) {
       .join(
         (enter) =>
           enter
-            .append("text") // append new labels
-            .attr("class", "label") // Add class for styling
+            .append("text")
+            .attr("class", "label")
             .text((d) => d.id)
             .attr("font-size", "16px")
             .attr("dx", -10)
             .attr("dy", 5),
-        (update) => update // update existing labels
+        (update) => update
       );
 
     // Disable transitions for labels
     label.transition().duration(0);
-
-    simulation.nodes(nodes);
-    simulation.force("link").links(links);
   }
 
   function ticked() {
