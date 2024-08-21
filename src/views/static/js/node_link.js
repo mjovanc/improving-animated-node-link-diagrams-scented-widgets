@@ -13,133 +13,6 @@ function initializeNodePositions(nodes) {
   });
 }
 
-function getNodeColor(node, communities_raw, currentTimeIndex) {
-  const communityColorPalette = [
-    "#FF0000",
-    "#FFA500",
-    "#FFFF00",
-    "#008000",
-    "#0000FF",
-    "#4B0082",
-    "#EE82EE",
-    "#800000",
-    "#FFC0CB",
-    "#FF69B4",
-    "#FF4500",
-    "#FFD700",
-    "#ADFF2F",
-    "#00FF00",
-    "#00FFFF",
-    "#1E90FF",
-    "#8A2BE2",
-    "#9400D3",
-    "#FFFFFF",
-    "#000000",
-    "#FF6347",
-    "#FFA07A",
-    "#FF7F50",
-    "#FFDAB9",
-    "#FFE4B5",
-    "#F0E68C",
-    "#DAA520",
-    "#BDB76B",
-    "#556B2F",
-    "#32CD32",
-    "#3CB371",
-    "#008080",
-    "#20B2AA",
-    "#00FA9A",
-    "#2E8B57",
-    "#66CDAA",
-    "#AFEEEE",
-    "#4682B4",
-    "#7FFFD4",
-    "#40E0D0",
-    "#87CEEB",
-    "#6495ED",
-    "#4169E1",
-    "#1E90FF",
-    "#191970",
-    "#000080",
-    "#B0E0E6",
-    "#00BFFF",
-    "#00CED1",
-    "#00FFFF",
-    "#7FFFD4",
-    "#40E0D0",
-    "#48D1CC",
-    "#20B2AA",
-    "#008B8B",
-    "#008080",
-    "#5F9EA0",
-    "#4682B4",
-    "#6495ED",
-    "#4169E1",
-    "#0000CD",
-    "#00008B",
-    "#000080",
-    "#87CEFA",
-    "#87CEEB",
-    "#00BFFF",
-    "#1E90FF",
-    "#6495ED",
-    "#4682B4",
-    "#4169E1",
-    "#0000FF",
-    "#0000CD",
-    "#00008B",
-    "#191970",
-    "#7B68EE",
-    "#483D8B",
-    "#663399",
-    "#9400D3",
-    "#800080",
-    "#8A2BE2",
-    "#4B0082",
-    "#483D8B",
-    "#6A5ACD",
-    "#7B68EE",
-    "#8A2BE2",
-    "#800080",
-    "#BA55D3",
-    "#9370DB",
-    "#8B008B",
-    "#9932CC",
-    "#9400D3",
-    "#800080",
-    "#8A2BE2",
-    "#4B0082",
-    "#483D8B",
-    "#6A5ACD",
-    "#7B68EE",
-    "#8A2BE2",
-    "#800080",
-    "#BA55D3",
-    "#9370DB",
-    "#8B008B",
-    "#9932CC",
-  ];
-
-  // Find the index of the object with the matching 'time' property
-  const timeIndex = communities_raw.findIndex(
-    (obj) => obj.time === currentTimeIndex
-  );
-
-  if (timeIndex === -1) {
-    return "rgb(220, 220, 220)"; // Default color if time is not found
-  }
-
-  const communitiesAtIndex = communities_raw[timeIndex].communities;
-
-  // Find the community index for the current node
-  const communityIndex = node.community;
-  if (communityIndex === undefined || communityIndex === -1) {
-    return "rgb(220, 220, 220)"; // Default color if no community found
-  }
-
-  return communityColorPalette[communityIndex % communityColorPalette.length];
-}
-
 function updateVisualization(nodes, links, times, communities_raw) {
   const currentTimeText = d3.select("#current-time");
   const playBtn = d3.select("#playBtn");
@@ -173,28 +46,6 @@ function updateVisualization(nodes, links, times, communities_raw) {
 
   timeoutInput.on("change", function () {
     intervalTimeoutValue.text("Timeout: " + this.value + " ms");
-  });
-
-  const uniqueNodeIds = new Set(nodes.map((d) => d.id)); // Create a set of unique node IDs
-
-  nodes = nodes.filter((d) => uniqueNodeIds.has(d.id)); // Filter out duplicate nodes
-
-  communities_raw.forEach((communityData, timeIndex) => {
-    // console.log("Processing community data for time index:", timeIndex);
-    const communityIds = new Set(communityData.communities.flat());
-    // console.log("Community IDs for time index", timeIndex, ":", communityIds);
-
-    nodes.forEach((node) => {
-      if (communityIds.has(node.id)) {
-        console.log(
-          "Node",
-          node.id,
-          "belongs to community at time index",
-          timeIndex
-        );
-        node.community = timeIndex; // Assigning the time index as the community value
-      }
-    });
   });
 
   d3.select("#scrubber")
@@ -231,9 +82,6 @@ function updateVisualization(nodes, links, times, communities_raw) {
     .on("tick", ticked);
 
   function updateSimulation(timeIndex) {
-    console.log("updateSimulation(" + timeIndex + ")");
-    console.log("Updating simulation...");
-
     // Filter nodes to remove duplicates
     const filteredNodes = [];
     const uniqueNodeIds = new Set(); // Set to store unique node IDs
@@ -251,6 +99,29 @@ function updateVisualization(nodes, links, times, communities_raw) {
 
     // Initialize node positions
     initializeNodePositions(filteredNodes);
+
+    // Assign colors based on the communities_raw data
+    const timeData = communities_raw.find((data) => data.time === timeIndex);
+    if (timeData && Array.isArray(timeData.communities)) {
+      // Create a map of node IDs to colors
+      const nodeColorMap = {};
+      timeData.communities.forEach((communityData) => {
+        const color = communityData.color;
+        const community = communityData.community;
+        community.forEach((nodeId) => {
+          nodeColorMap[nodeId] = color;
+        });
+      });
+
+      // Update the nodes with the colors from nodeColorMap
+      filteredNodes.forEach((node) => {
+        if (nodeColorMap[node.id]) {
+          node.color = nodeColorMap[node.id];
+        } else {
+          node.color = "#000"; // Default color if not found
+        }
+      });
+    }
 
     // Update simulation with filtered nodes and links
     simulation.nodes(filteredNodes);
@@ -291,16 +162,24 @@ function updateVisualization(nodes, links, times, communities_raw) {
             .append("circle")
             .attr("class", "node")
             .attr("r", 20)
-            .attr("fill", (d) =>
-              getNodeColor(d, communities_raw, currentTimeIndex)
-            )
+            .attr("fill", (d) => {
+              if (!d.color) {
+                console.log(`Node ${d.id} color is undefined.`);
+                return "#000"; // Fallback color
+              }
+              return d.color;
+            })
             .attr("stroke", "#DFDFDF")
             .call(drag(simulation))
             .on("click", clicked),
         (update) =>
-          update.attr("fill", (d) =>
-            getNodeColor(d, communities_raw, currentTimeIndex)
-          ),
+          update.attr("fill", (d) => {
+            if (!d.color) {
+              console.log(`Node ${d.id} color is undefined.`);
+              return "#000"; // Fallback color
+            }
+            return d.color;
+          }),
         (exit) => exit.remove()
       );
 

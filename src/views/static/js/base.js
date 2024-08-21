@@ -33,7 +33,7 @@ document
 
 function visualizeData(data) {
   // Print a message to the console to check if the code reaches this part
-  console.log(data);
+  console.log(data.communities_raw);
 
   const edgesRadio = d3.select("#edgesRadio");
   const nodesRadio = d3.select("#nodesRadio");
