@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify  # Importing request module
 import networkx as nx
 from io import StringIO
 import json
+import random
 
 from src.controllers.controller import DataController
 
@@ -41,6 +42,9 @@ def get_line_data():
 def get_node_link():
     return {"data": DataController.get_validated_line_data()}
 
+def generate_color():
+    """Generate a random color in hex format."""
+    return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
 def convert_to_json(text_data):
     nodes = []
@@ -53,10 +57,8 @@ def convert_to_json(text_data):
         parts = line.split()
         if len(parts) == 3:  # Ensure each line contains three parts: node_origin, node_destiny, timestamp
             node_origin, node_destiny, timestamp = parts
-
             # populate data list
             data.append([int(node_origin), int(node_destiny), int(timestamp)])
-
             nodes.append({'id': node_origin, 'time': int(timestamp)})
             nodes.append({'id': node_destiny, 'time': int(timestamp)})
             links.append({'source': node_origin, 'target': node_destiny, 'time': int(timestamp)})
@@ -65,28 +67,30 @@ def convert_to_json(text_data):
     converted_data = convert_data(data)
     communities_list = create_communities(converted_data)
 
-    # Create a mapping from node id to community id for each time
+    # Create a mapping from node id to its color and community id for each time
     node_to_community = {}
     for entry in communities_list:
         time = entry['time']
-        for i, community in enumerate(entry['communities']):
+        for i, community_data in enumerate(entry['communities']):
+            color = community_data['color']
+            community = community_data['community']
             for node_id in community:
-                node_to_community[node_id] = {'time': time, 'community': i}
+                node_to_community[node_id] = {'time': time, 'community': i, 'color': color}
 
-    # Assign community information to nodes
+    # Assign community information and colors to nodes
     for node in nodes:
-        node_info = node_to_community.get(int(node['id']), {'community': -1})
+        node_info = node_to_community.get(int(node['id']), {'community': -1, 'color': 'rgb(220, 220, 220)'})
         node['community'] = node_info['community']
+        node['color'] = node_info['color']
 
     categorized_communities = categorize_communities(communities_list)
 
-    return {
-        'nodes': nodes,
-        'links': links,
-        'times': sorted(list(times)),
-        'communities': categorized_communities,
-        'communities_raw': communities_list
-    }
+    data_to_return = {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': categorized_communities,
+        'communities_raw': communities_list}
+
+    print(data_to_return)
+
+    return data_to_return
 
 def convert_data(data):
     new_data = []
@@ -119,26 +123,32 @@ def convert_data(data):
 
 def create_communities(data):
     com_data = []
+    color_map = {}  # To keep track of assigned colors per community
 
     for time_data in data:
         time = time_data['time']
         nodes = time_data['nodes']
         
-        # Instantiate a graph for the current time period
         G = nx.Graph()
-        
-        # Add nodes and edges to the graph based on the current time period data
         for node_pair in nodes:
             G.add_nodes_from(node_pair)
             G.add_edge(*node_pair)
         
-        # Generate communities for the graph
         communities = nx.community.louvain_communities(G, seed=123)
         
-        # Store the communities and time in the desired structure
-        com_data.append({"time": time, "communities": [list(community) for community in communities]})
+        community_colors = []
+        for community in communities:
+            community_tuple = tuple(sorted(community))
+            if community_tuple not in color_map:
+                color_map[community_tuple] = generate_color()
+            color = color_map[community_tuple]
+            
+            community_colors.append({"community": list(community), "color": color})
+        
+        com_data.append({"time": time, "communities": community_colors})
     
     return com_data
+
 
 
 def categorize_communities(dataset):

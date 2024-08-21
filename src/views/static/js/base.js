@@ -32,31 +32,24 @@ document
   });
 
 function visualizeData(data) {
-  // Print a message to the console to check if the code reaches this part
-  console.log(data.communities_raw);
-
   const edgesRadio = d3.select("#edgesRadio");
   const nodesRadio = d3.select("#nodesRadio");
   const communitiesRadio = d3.select("#communitiesRadio");
 
   edgesRadio.on("change", function (e) {
     if (e.target.checked) {
-      console.log("Edges selected...");
       edgesVisualization(data.nodes, data.links, data.times);
     }
   });
 
   nodesRadio.on("change", function (e) {
     if (e.target.checked) {
-      console.log("Nodes selected...");
       nodesVisualization(data.nodes, data.links, data.times);
     }
   });
 
   communitiesRadio.on("change", function (e) {
     if (e.target.checked) {
-      console.log("Communities selected...");
-      console.log(data.communities_raw);
       communitiesVisualization(data.communities);
     }
   });
@@ -66,9 +59,4 @@ function visualizeData(data) {
   updateVisualization(data.nodes, data.links, data.times, data.communities_raw);
 
   closeNav();
-  // D3.js code to visualize data
-  // This function will receive data from the server and create a node-link diagram
-  // Example:
-  // d3.select("#visualization").append("svg").attr("width", 500).attr("height", 500)
-  //     .append("circle").attr("cx", 50).attr("cy", 50).attr("r", data.radius).style("fill", "red");
 }
