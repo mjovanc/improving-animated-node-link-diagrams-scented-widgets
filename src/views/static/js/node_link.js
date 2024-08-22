@@ -48,6 +48,9 @@ function updateVisualization(nodes, links, times, communities_raw) {
     intervalTimeoutValue.text("Timeout: " + this.value + " ms");
   });
 
+  // Remove existing slider if it exists
+  d3.select("#scrubber").select("#select-time").remove();
+
   d3.select("#scrubber")
     .append("input")
     .attr("type", "range")
