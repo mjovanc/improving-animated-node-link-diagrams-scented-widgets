@@ -140,9 +140,12 @@ function nodesVisualization(nodes, links, times) {
 function communitiesVisualization(communities) {
   // Remove any existing SVG elements
   d3.select("#bar_chart").selectAll("svg").remove();
+  console.log(Array.isArray(communities)); // Should be true for an array
+  console.log(typeof communities); // Should be "object" for an array
 
   // Parse the Data
-  const data = communities.map((row) => ({
+  const communitiesArray = Object.values(communities); // Converts object properties to an array
+  const data = communitiesArray.map((row) => ({
     time: row[0],
     values: row.slice(1, 4), // Extract values for sections A, B, and C only
     total: row[4], // Total value of A + B + C

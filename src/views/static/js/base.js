@@ -50,7 +50,7 @@ function visualizeData(data) {
 
   communitiesRadio.on("change", function (e) {
     if (e.target.checked) {
-      communitiesVisualization(data.communities);
+      communitiesVisualization(data.communities_categorized);
     }
   });
 

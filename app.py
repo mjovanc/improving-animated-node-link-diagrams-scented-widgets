@@ -4,6 +4,7 @@ import networkx as nx
 from io import StringIO
 import json
 import random
+import copy
 
 from src.controllers.controller import DataController
 
@@ -66,6 +67,8 @@ def convert_to_json(text_data):
 
     converted_data = convert_data(data)
     communities_list = create_communities(converted_data)
+    # Make a deep copy of communities_list to use for stacked bar chart
+    communities_list2 = copy.deepcopy(communities_list)
 
     # Create a mapping from node id to its color and community id for each time
     node_to_community = {}
@@ -84,11 +87,17 @@ def convert_to_json(text_data):
         node['color'] = node_info['color']
 
     categorized_communities = categorize_communities(communities_list)
+    categorized_communities2 = categorize_communities(communities_list2)
+
+    print("CATEGORIZED_COMMUNITIES -------------------------------------")
+    print(categorized_communities)
+    print("CATEGORIZED_COMMUNITIES 2 -------------------------------------")
+    print(categorized_communities2)
 
     data_to_return = {'nodes': nodes, 'links': links, 'times': sorted(list(times)), 'communities': categorized_communities,
-        'communities_raw': communities_list}
+        'communities_categorized': categorized_communities2, 'communities_raw': communities_list}
 
-    print(data_to_return)
+    # print(data_to_return)
 
     return data_to_return
 
