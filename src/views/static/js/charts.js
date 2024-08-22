@@ -140,6 +140,7 @@ function nodesVisualization(nodes, links, times) {
 function communitiesVisualization(communities) {
   // Remove any existing SVG elements
   d3.select("#bar_chart").selectAll("svg").remove();
+  console.log(communities);
   console.log(Array.isArray(communities)); // Should be true for an array
   console.log(typeof communities); // Should be "object" for an array
 

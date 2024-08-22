@@ -178,18 +178,23 @@ def categorize_communities(dataset):
         # Initialize counters for categories A, B, and C
         counts = {'A': 0, 'B': 0, 'C': 0}
 
-        # Categorize communities based on size distribution
-        for community in communities:
-            size = len(community)
-            if size < 3:
+        # Loop through each community dictionary
+        for community_dict in communities:
+            community_size = len(community_dict['community'])
+            
+            # Categorize based on the size of the community
+            if community_size < 3:
                 counts['A'] += 1
-            elif size < 6:
+            elif community_size < 6:
                 counts['B'] += 1
             else:
                 counts['C'] += 1
 
         # Calculate total number of communities
         total_communities = len(communities)
+
+        print("COUNTS ----------")
+        print(counts)
 
         # Append the row to data1
         data.append([time, counts['A'], counts['B'], counts['C'], total_communities])
