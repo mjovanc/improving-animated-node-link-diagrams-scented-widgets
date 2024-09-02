@@ -1,6 +1,6 @@
 # Improving Animated Node-Link Diagrams with Scented Widgets
 
-## Instalation guidelines
+## Installation guidelines
 
 ### Create, activate, and download dependencies with a virtual environment using venv
 
